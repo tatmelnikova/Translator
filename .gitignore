@@ -3,6 +3,7 @@
 .signing
 /local.properties
 /.idea/workspace.xml
+/.idea/codeStyleSettings.xml
 /.idea/tasks.xml
 /.idea/.name
 /.idea/compiler.xml
