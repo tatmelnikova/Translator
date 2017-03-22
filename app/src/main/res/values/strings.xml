@@ -3,4 +3,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_settings">Настройки</string>
+    <string name="title_favorites">Избранное</string>
+    <string name="title_translate">Перевод</string>
 </resources>
