@@ -10,7 +10,41 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class TranslatorApplication extends Application {
     private Retrofit sRetrofit;
     private static YandexTranslateApi sYandexTranslateApi;
-    private Language mLanguage = null;
+    /**
+     * mLanguageLocalisation хранит последний полученный от YandexTranslate список языков в выбранной локали
+     */
+    private LanguageLocalisation mLanguageLocalisation = null;
+
+    /**
+     * DEFAULT_LANG_TO, DEFAULT_LANG_FROM - языки перевода по умолчанию
+     */
+    private final String DEFAULT_LANG_FROM = "en";
+    private final String DEFAULT_LANG_TO = "ru";
+    /**
+     * mLangFrom - последний выбранный язык, с которого переводим
+     */
+    private String mLangFrom = DEFAULT_LANG_FROM;
+    /**
+     * mLangTo - последний выбранный язык, на который переводим
+     */
+    private String mLangTo = DEFAULT_LANG_TO;
+
+    public String getLangFrom() {
+        return mLangFrom;
+    }
+
+    public void setLangFrom(String langFrom) {
+        mLangFrom = langFrom;
+    }
+
+    public String getLangTo() {
+        return mLangTo;
+    }
+
+    public void setLangTo(String langTo) {
+        mLangTo = langTo;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -24,6 +58,6 @@ public class TranslatorApplication extends Application {
     public static YandexTranslateApi getApi() {
         return sYandexTranslateApi;
     }
-    public Language getLanguage(){return mLanguage;}
-    public void setLanguage(Language language){this.mLanguage = language;}
+    public LanguageLocalisation getLanguageLocalisation(){return mLanguageLocalisation;}
+    public void setLanguageLocalisation(LanguageLocalisation languageLocalisation){this.mLanguageLocalisation = languageLocalisation;}
 }

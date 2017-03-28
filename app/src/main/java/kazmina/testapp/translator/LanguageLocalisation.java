@@ -7,7 +7,7 @@ import java.util.List;
  * Created by Fina on 21.03.2017.
  */
 
-public class Language {
+public class LanguageLocalisation {
 
 
     private String[] dirs;
