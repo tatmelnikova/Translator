@@ -4,16 +4,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * Created by Fina on 21.03.2017.
+ * класс для хранения списка доступных языков с переводами их названий
  */
 
-public class LanguageLocalisation {
+class LanguageLocalisation {
 
 
     private String[] dirs;
-    protected LinkedHashMap<String, String> langs;
+    private LinkedHashMap<String, String> langs;
 
-    public LinkedHashMap<String, String> getLangs() {
+     LinkedHashMap<String, String> getLangs() {
         return langs;
     }
 
