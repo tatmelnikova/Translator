@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.Locale;
 
@@ -18,9 +20,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "MainActivity";
-    private String langFromID = null;
-    private String langToID = null;
-
+    private TranslateWatcher mTranslateWatcher;
     private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }else{
                     TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
                     app.setLanguageLocalisation(response.body());
-                    showCurrentTranslateDirection();
+                    setupCurrentTranslateDirection();
                 }
             }
             @Override
@@ -75,16 +75,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    /**
+     * привязывает слушатель к полю ввода текста для перевода
+     */
+    private void setWatcher(){
+        TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
+        TextView translateResult = (TextView) findViewById(R.id.textViewResult);
+        EditText text = (EditText) findViewById(R.id.editTextInput);
+        text.removeTextChangedListener(mTranslateWatcher);
+        mTranslateWatcher = new TranslateWatcher(translateResult, app.getLangFrom(), app.getLangTo());
+        text.addTextChangedListener(mTranslateWatcher);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        showCurrentTranslateDirection();
+        setupCurrentTranslateDirection();
     }
 
-    private void showCurrentTranslateDirection(){
+    private void setupCurrentTranslateDirection(){
         TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
-        langFromID = app.getLangFrom();
-        langToID = app.getLangTo();
+        String langFromID = app.getLangFrom();
+        String langToID = app.getLangTo();
         LanguageLocalisation languageLocalisation = app.getLanguageLocalisation();
         if (languageLocalisation != null) {
             if (langFromID != null) {
@@ -97,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 langToButton.setText(languageLocalisation.getLangs().get(langToID));
             }
         }
+        setWatcher();
     }
     private void showLangsView(Integer viewID){
         String langID = Locale.getDefault().getLanguage();
@@ -110,10 +123,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void swapTranslateDirections(){
         TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
-        String tmp = langToID;
+        String tmp = app.getLangTo();
         app.setLangTo(app.getLangFrom());
         app.setLangFrom(tmp);
-        showCurrentTranslateDirection();
+        setupCurrentTranslateDirection();
     }
     @Override
     public void onClick(View v) {
