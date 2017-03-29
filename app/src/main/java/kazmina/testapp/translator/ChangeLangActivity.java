@@ -17,7 +17,7 @@ import java.util.Map;
 
 
 /**
- * @todo: header
+ * отображает список доступных для перевода языков с возможностью выбора
  */
 
 public class ChangeLangActivity extends AppCompatActivity implements ListView.OnItemClickListener {
@@ -39,7 +39,7 @@ public class ChangeLangActivity extends AppCompatActivity implements ListView.On
         LanguageLocalisation currentLang = app.getLanguageLocalisation();
         availableLangs = currentLang.getLangs();
         ListView langsList = (ListView) this.findViewById(R.id.langsList);
-        ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>(
+        ArrayList<Map<String, Object>> data = new ArrayList<>(
                 availableLangs.size());
         Map<String, Object> m;
         boolean checked;
