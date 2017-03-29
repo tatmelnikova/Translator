@@ -5,9 +5,11 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import kazmina.testapp.translator.interfaces.TranslateResultHandler;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -18,20 +20,22 @@ import retrofit2.Response;
 
 class TranslateWatcher implements TextWatcher{
     private Timer mTimer = new Timer();
-
-    private TextView mResultView;
     private final String TAG = "TranslateWatcher";
     private String mTranslateDirection;
+    private List<TranslateResultHandler> mHandlerList;
 
     private final long mDelay = 1000;
     private final String mDelimeter = "-";
 
+
     /**
-     * @param view - поле ввода для отображения результата перевода
+     * @param langFrom - идентификатор языка, с которого переводим
+     * @param langTo - идентификатор языка, на который переводим
+     * @param handlerList - список обработчиков результата перевода
      */
-    TranslateWatcher(TextView view, String langFrom, String langTo) {
+    TranslateWatcher(String langFrom, String langTo, List<TranslateResultHandler> handlerList) {
         super();
-        mResultView = view;
+        mHandlerList = handlerList;
         mTranslateDirection = langFrom.concat(mDelimeter).concat(langTo);
     }
 
@@ -68,12 +72,10 @@ class TranslateWatcher implements TextWatcher{
                         api.getTranslate(text, mTranslateDirection).enqueue(new Callback<TranslateResult>() {
                             @Override
                                 public void onResponse(Call<TranslateResult> call, Response<TranslateResult> response) {
-                                    mResultView.setText("");
                                     if (response.body() != null){
-                                       final TranslateResult translateResult = response.body();
-                                       for (String textPart : translateResult.getText()){
-                                           mResultView.append(textPart);
-                                       }
+                                        for (TranslateResultHandler handler : mHandlerList){
+                                            handler.processResult(response.body());
+                                        }
                                     }
                                 }
 

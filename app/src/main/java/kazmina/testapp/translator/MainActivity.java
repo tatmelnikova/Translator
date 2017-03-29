@@ -12,8 +12,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import kazmina.testapp.translator.interfaces.SaveResultAction;
+import kazmina.testapp.translator.interfaces.ShowResultAction;
+import kazmina.testapp.translator.interfaces.TranslateResultHandler;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,6 +26,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "MainActivity";
     private TranslateWatcher mTranslateWatcher;
+    private List<TranslateResultHandler> mResultHandlers;
     private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -48,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
 
         YandexTranslateApi api = TranslatorApplication.getApi();
         String langID = Locale.getDefault().getLanguage();
@@ -80,10 +88,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void setWatcher(){
         TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
-        TextView translateResult = (TextView) findViewById(R.id.textViewResult);
         EditText text = (EditText) findViewById(R.id.editTextInput);
         text.removeTextChangedListener(mTranslateWatcher);
-        mTranslateWatcher = new TranslateWatcher(translateResult, app.getLangFrom(), app.getLangTo());
+        mTranslateWatcher = new TranslateWatcher( app.getLangFrom(), app.getLangTo(), mResultHandlers);
         text.addTextChangedListener(mTranslateWatcher);
     }
 
@@ -91,6 +98,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         setupCurrentTranslateDirection();
+        TextView resultView = (TextView)findViewById(R.id.textViewResult);
+        ShowResultAction showResultAction = new ShowResultAction(resultView);
+        SaveResultAction saveResultAction = new SaveResultAction(getBaseContext());
+        mResultHandlers = new ArrayList<>();
+        mResultHandlers.add(showResultAction);
+        mResultHandlers.add(saveResultAction);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mResultHandlers = null;
     }
 
     private void setupCurrentTranslateDirection(){
