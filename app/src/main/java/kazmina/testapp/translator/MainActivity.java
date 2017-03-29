@@ -19,6 +19,7 @@ import java.util.Locale;
 import kazmina.testapp.translator.interfaces.SaveResultAction;
 import kazmina.testapp.translator.interfaces.ShowResultAction;
 import kazmina.testapp.translator.interfaces.TranslateResultHandler;
+import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

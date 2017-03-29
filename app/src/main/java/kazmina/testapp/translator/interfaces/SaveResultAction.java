@@ -2,7 +2,7 @@ package kazmina.testapp.translator.interfaces;
 
 import android.content.Context;
 
-import kazmina.testapp.translator.TranslateResult;
+import kazmina.testapp.translator.retrofitModels.TranslateResult;
 import kazmina.testapp.translator.db.DbBackend;
 
 /**

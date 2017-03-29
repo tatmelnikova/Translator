@@ -1,9 +1,9 @@
 package kazmina.testapp.translator.interfaces;
 
-import kazmina.testapp.translator.TranslateResult;
+import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 /**
- * @todo: header
+ * интерфейс для обработчиков результата перевода
  */
 
 public interface TranslateResultHandler {

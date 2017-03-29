@@ -2,6 +2,7 @@ package kazmina.testapp.translator;
 
 import android.app.Application;
 
+import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 

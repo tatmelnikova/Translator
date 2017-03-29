@@ -1,14 +1,14 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.retrofitModels;
 
 import java.util.LinkedHashMap;
 /**
  * класс для хранения списка доступных языков с переводами их названий
  */
 
-class LanguageLocalisation {
+public class LanguageLocalisation {
     private LinkedHashMap<String, String> langs;
 
-    LinkedHashMap<String, String> getLangs() {
+    public LinkedHashMap<String, String> getLangs() {
         return langs;
     }
 

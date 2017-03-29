@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
+
 
 /**
  * отображает список доступных для перевода языков с возможностью выбора

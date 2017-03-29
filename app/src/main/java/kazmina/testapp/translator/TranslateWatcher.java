@@ -3,13 +3,13 @@ package kazmina.testapp.translator;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.TextView;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import kazmina.testapp.translator.interfaces.TranslateResultHandler;
+import kazmina.testapp.translator.retrofitModels.TranslateResult;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

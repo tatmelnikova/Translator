@@ -1,4 +1,4 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.retrofitModels;
 
 /**
  * класс для хранения результата перевода

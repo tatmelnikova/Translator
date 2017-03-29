@@ -4,7 +4,7 @@ import android.content.Context;
 import android.widget.TextView;
 
 
-import kazmina.testapp.translator.TranslateResult;
+import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 /**
  * обработчик для отображения результата перевода

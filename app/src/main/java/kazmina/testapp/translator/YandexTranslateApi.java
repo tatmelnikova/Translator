@@ -1,5 +1,7 @@
 package kazmina.testapp.translator;
 
+import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
+import kazmina.testapp.translator.retrofitModels.TranslateResult;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
