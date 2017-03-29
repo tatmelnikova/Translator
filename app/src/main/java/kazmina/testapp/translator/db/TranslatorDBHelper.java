@@ -18,6 +18,7 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
             "CREATE TABLE " + HISTORY + "(" +
+            History.ID + " INTEGER PRIMARY KEY, " +
             History.TEXT + " STRING NOT NULL, " +
             History.RESULT + " STRING NOT NULL, " +
             History.DIRECTION_FROM + " STRING NOT NULL, " +
