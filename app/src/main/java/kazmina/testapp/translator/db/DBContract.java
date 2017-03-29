@@ -11,7 +11,7 @@ interface DBContract {
         String ID = "rowid";
         String TEXT = "text";
         String RESULT = "result";
-        String DIRECTION_FROM = "from";
-        String DIRECTION_TO = "to";
+        String DIRECTION_FROM = "direction_from";
+        String DIRECTION_TO = "direction_to";
     }
 }
