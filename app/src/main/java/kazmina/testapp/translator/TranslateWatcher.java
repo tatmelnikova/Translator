@@ -74,7 +74,7 @@ class TranslateWatcher implements TextWatcher{
                                 public void onResponse(Call<TranslateResult> call, Response<TranslateResult> response) {
                                     if (response.body() != null){
                                         for (TranslateResultHandler handler : mHandlerList){
-                                            handler.processResult(response.body());
+                                            handler.processResult(text, response.body());
                                         }
                                     }
                                 }

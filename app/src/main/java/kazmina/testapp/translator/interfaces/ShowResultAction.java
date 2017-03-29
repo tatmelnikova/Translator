@@ -20,7 +20,7 @@ public class ShowResultAction implements  TranslateResultHandler {
     }
 
     @Override
-    public boolean processResult(TranslateResult translateResult) {
+    public boolean processResult(String text, TranslateResult translateResult) {
         mResultView.setText("");
         if (translateResult != null){
             for (String textPart : translateResult.getText()){

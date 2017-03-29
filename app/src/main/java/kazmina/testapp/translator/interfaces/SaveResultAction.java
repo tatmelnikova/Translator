@@ -18,8 +18,8 @@ public class SaveResultAction implements TranslateResultHandler {
     }
 
     @Override
-    public boolean processResult(TranslateResult translateResult) {
+    public boolean processResult(String text, TranslateResult translateResult) {
         DbBackend backend = new DbBackend(mContext);
-        return backend.insertHistoryItem(translateResult.getText()[0],"", translateResult.getLang(), translateResult.getLang());
+        return backend.insertHistoryItem(text, translateResult.getText()[0], translateResult.getLang(), translateResult.getLang());
     }
 }

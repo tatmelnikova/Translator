@@ -8,5 +8,5 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 public interface TranslateResultHandler {
     TranslateResult translateResult = null;
-    boolean processResult(TranslateResult translateResult);
+    boolean processResult(String text, TranslateResult translateResult);
 }
