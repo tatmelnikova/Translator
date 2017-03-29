@@ -11,10 +11,10 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class DbBackend implements DBContract {
     private final TranslatorDBHelper mDBHelper;
-    DbBackend(Context context) {
+    public DbBackend(Context context) {
         mDBHelper = new TranslatorDBHelper(context);
     }
-    DbBackend(TranslatorDBHelper dbOpenHelper) {
+    public DbBackend(TranslatorDBHelper dbOpenHelper) {
         mDBHelper = dbOpenHelper;
     }
     public Cursor getTranslateHistory() {
