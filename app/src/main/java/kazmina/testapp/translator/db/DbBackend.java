@@ -29,6 +29,29 @@ public class DbBackend implements DBContract {
         return c;
     }
 
+    /**
+     * выбирает историю перевода + ID элемента в избранном, если он там есть
+     * @return курсор
+     */
+    public Cursor getHistoryWithFav(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        String[] columns = new String[] { History.ID , History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO, History.FAV_ID};
+        String orderBy = History.ID + " DESC";
+        Cursor c = db.query(HISTORY_WITH_FAV, columns, null, null, null, null, orderBy);
+        if (c != null) {
+            c.moveToFirst();
+        }
+        return c;
+    }
+
+    /**
+     * добавляет результат перевода в избранное
+     * @param text - исходный текст
+     * @param result - результат перевода
+     * @param from - язык, с которого переводим
+     * @param to - язык, на который переводим
+     * @return true, если вставка прошла успешно
+     */
     public boolean insertHistoryItem(String text, String result, String from, String to){
         /*
         * @todo: проверка на существование записи
@@ -51,5 +74,11 @@ public class DbBackend implements DBContract {
             db.endTransaction();
         }
         return inserted;
+    }
+
+    public void copyHistoryItemToFavorites(int itemID){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.beginTransaction();
+        db.execSQL("INSERT INTO " + FAVORITES + " SELECT * FROM " + HISTORY + "WHERE _id=?", new Object[itemID]);
     }
 }
