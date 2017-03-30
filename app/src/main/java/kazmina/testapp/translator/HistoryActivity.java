@@ -5,14 +5,11 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ListView;
 
-import kazmina.testapp.translator.db.DBContract;
 import kazmina.testapp.translator.db.DbBackend;
 
 /**
@@ -48,17 +45,11 @@ public class HistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_history);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        String[] from = new String[] {DBContract.History.TEXT, DBContract.History.RESULT};
-        int[] to = new int[] { R.id.textViewText, R.id.textViewResult};
+
         DbBackend backend = new DbBackend(getBaseContext());
         Cursor cursor = backend.getTranslateHistory();
-        CursorAdapter cursorAdapter = new SimpleCursorAdapter(getBaseContext(), R.layout.history_item, cursor, from, to );
-        //cursor.moveToFirst();
-        while (cursor.moveToNext() ){
-
-            Log.d( TAG, cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3));
-        }
+        HistoryCursorAdapter historyCursorAdapter = new HistoryCursorAdapter(getBaseContext(), cursor, 1);
         ListView historyList = (ListView)findViewById(R.id.historyList);
-        historyList.setAdapter(cursorAdapter);
+        historyList.setAdapter(historyCursorAdapter);
     }
 }
