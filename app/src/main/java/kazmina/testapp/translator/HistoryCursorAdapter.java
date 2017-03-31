@@ -2,10 +2,14 @@ package kazmina.testapp.translator;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import kazmina.testapp.translator.db.DbBackend;
@@ -15,10 +19,11 @@ import kazmina.testapp.translator.db.DbBackend;
  */
 
 public class HistoryCursorAdapter extends CursorAdapter implements DbBackend.History{
-    private String mDelimeter = "-";
-    public HistoryCursorAdapter(Context context, Cursor c, int flags) {
+     private String mDelimeter = "-";
+    String TAG = "HistoryCursorAdapter";
+     HistoryCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
-    }
+     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -28,6 +33,8 @@ public class HistoryCursorAdapter extends CursorAdapter implements DbBackend.His
         holder.textViewBaseText =  (TextView) rowView.findViewById(R.id.textViewText);
         holder.textViewResultText = (TextView) rowView.findViewById(R.id.textViewResult);
         holder.textViewDirection = (TextView) rowView.findViewById(R.id.textViewDirection);
+        holder.imageViewFav  = (ImageView) rowView.findViewById(R.id.imageViewFav);
+
         rowView.setTag(holder);
         return rowView;
     }
@@ -42,13 +49,23 @@ public class HistoryCursorAdapter extends CursorAdapter implements DbBackend.His
                 .concat(mDelimeter)
                 .concat(cursor.getString(cursor.getColumnIndex(DIRECTION_TO)))
         );
-        // use the holder filled with views
-        // hlder.v1.setSomething
+
+        int colorActive = ResourcesCompat.getColor(context.getResources(), R.color.colorPrimary, null);
+        int colorDisabled = ResourcesCompat.getColor(context.getResources(), R.color.colorDisabled, null);
+        if (!cursor.isNull(cursor.getColumnIndex(FAV_ID))) {
+            Integer favID = cursor.getInt(cursor.getColumnIndex(FAV_ID));
+
+            holder.imageViewFav.setColorFilter(colorActive, PorterDuff.Mode.LIGHTEN);
+            holder.imageViewFav.setTag(favID);
+        }else{
+            holder.imageViewFav.setColorFilter(colorDisabled, PorterDuff.Mode.MULTIPLY);
+        }
     }
 
-    class ViewHolder{
+    private class ViewHolder{
         TextView textViewBaseText;
         TextView textViewResultText;
         TextView textViewDirection;
+        ImageView imageViewFav;
     }
 }
