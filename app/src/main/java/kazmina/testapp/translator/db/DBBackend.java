@@ -136,8 +136,13 @@ public class DBBackend implements DBContract {
 
     public void removeFromFavoritesByID(int itemID){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        db.beginTransaction();
-        db.delete(FAVORITES, "_id=?", new String[]{String.valueOf(itemID)});
-        db.endTransaction();
+        try {
+            db.beginTransaction();
+            db.delete(FAVORITES, "_id=?", new String[]{String.valueOf(itemID)});
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }catch (Exception e){
+            Log.d(TAG, e.getMessage());
+        }
     }
 }
