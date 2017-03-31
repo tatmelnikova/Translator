@@ -38,11 +38,11 @@ public class DBProvider {
         mExecutor = executor;
     }
 
-    public void getHistoryWithFav(final ResultCallback<Cursor> callback) {
+    public void getHistoryWithFav(final String searchText, final ResultCallback<Cursor> callback) {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final Cursor c =  mDBBackend.getHistoryWithFav();
+                final Cursor c =  mDBBackend.getHistoryWithFav(searchText);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {

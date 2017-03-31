@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.SearchView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
     private DBProvider mDBProvider;
     private DBNotificationManager mDBNotificationManager;
     ListView mHistoryList;
+    String mSearchText = null;
     private DBNotificationManager.Listener mDbListener = new DBNotificationManager.Listener(){
         @Override
         public void onDataUpdated() {
@@ -67,11 +69,28 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         mHistoryList.setOnItemClickListener(listener);
 
 
+        SearchView historySearchView = (SearchView) findViewById(R.id.historySearchView);
+        historySearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mSearchText = newText;
+                refreshHistoryData();
+                return true;
+            }
+        });
+
+
     }
 
     public void refreshHistoryData(){
+
         Log.d(TAG, "refresh");
-        mDBProvider.getHistoryWithFav(new DBProvider.ResultCallback<Cursor>() {
+        mDBProvider.getHistoryWithFav(mSearchText, new DBProvider.ResultCallback<Cursor>() {
             @Override
             public void onFinished(final Cursor result) {
                 HistoryCursorAdapter historyCursorAdapter;

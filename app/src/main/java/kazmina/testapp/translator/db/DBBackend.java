@@ -35,14 +35,19 @@ public class DBBackend implements DBContract {
      * выбирает историю перевода + ID элемента в избранном, если он там есть
      * @return курсор
      */
-    public Cursor getHistoryWithFav(){
+    public Cursor getHistoryWithFav(String searchText){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         Cursor c = null;
         try {
             db.beginTransaction();
             String[] columns = new String[]{History.ID, History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO, History.FAV_ID};
             String orderBy = History.ID + " DESC";
-            c = db.query(HISTORY_WITH_FAV, columns, null, null, null, null, orderBy);
+            String where = null; String[] args = null;
+            if (searchText != null) {
+                where = History.TEXT + " like ? OR " + History.RESULT + "  like ? ";
+                args = new String[]{"%".concat(searchText).concat("%")};
+            }
+            c = db.query(HISTORY_WITH_FAV, columns, where, args, null, null, orderBy);
             if (c != null) {
                 c.moveToFirst();
             }
