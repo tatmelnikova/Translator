@@ -1,34 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
 
-    <TextView
+                android:orientation="vertical">
+
+   <TextView
         android:id="@+id/textViewText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="text"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/textViewDirection"
-        android:layout_toStartOf="@+id/textViewDirection"/>
-    <TextView
-        android:id="@+id/textViewResult"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="result"
-        android:layout_below="@+id/textViewText"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/textViewDirection"
-        android:layout_toStartOf="@+id/textViewDirection"/>
-    <TextView
-        android:id="@+id/textViewDirection"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
-</RelativeLayout>
+        android:layout_toLeftOf="@+id/textViewDirection"
+        android:layout_toStartOf="@+id/textViewDirection"
+        android:text="text"/>
+
+
+       <TextView
+           android:id="@+id/textViewResult"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentStart="true"
+           android:layout_below="@+id/textViewText"
+           android:layout_toLeftOf="@+id/textViewDirection"
+           android:layout_toStartOf="@+id/textViewDirection"
+           />
+
+       <TextView
+           android:id="@+id/textViewDirection"
+           android:layout_width="100dp"
+           android:layout_height="match_parent"
+
+           android:layout_alignParentTop="true"
+
+           android:layout_toLeftOf="@+id/imageViewFav"
+           android:layout_toStartOf="@+id/imageViewFav"/>
+
+           <ImageView
+               android:id="@+id/imageViewFav"
+               android:layout_width="100dp"
+               android:layout_height="match_parent"
+               android:layout_alignParentEnd="true"
+               android:layout_alignParentRight="true"
+               android:background="@android:color/transparent"
+               android:focusable="false"
+               android:focusableInTouchMode="false"
+               android:src="@drawable/ic_favorite_white_24dp"/>
+
+   </RelativeLayout>
