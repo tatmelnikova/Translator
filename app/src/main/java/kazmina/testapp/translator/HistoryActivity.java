@@ -8,15 +8,18 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
+import kazmina.testapp.translator.db.DBContract;
 import kazmina.testapp.translator.db.DbBackend;
 
 /**
  * история переводов
  */
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "HistoryActivity";
     private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -47,9 +50,32 @@ public class HistoryActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         DbBackend backend = new DbBackend(getBaseContext());
-        Cursor cursor = backend.getTranslateHistory();
+        Cursor cursor = backend.getHistoryWithFav();
         HistoryCursorAdapter historyCursorAdapter = new HistoryCursorAdapter(getBaseContext(), cursor, 1);
         ListView historyList = (ListView)findViewById(R.id.historyList);
         historyList.setAdapter(historyCursorAdapter);
+        ListView.OnItemClickListener listener = new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor c = ((HistoryCursorAdapter)parent.getAdapter()).getCursor();
+                c.moveToPosition(position);
+                DbBackend backend = new DbBackend(getBaseContext());
+                if (c.isNull(c.getColumnIndex(DBContract.History.FAV_ID))){
+                    Integer historyID = c.getInt(c.getColumnIndex(DBContract.History.ID));
+                    backend.copyHistoryItemToFavorites(historyID);
+                }else{
+                    Integer favID = c.getInt(c.getColumnIndex(DBContract.History.FAV_ID));
+                    backend.removeFromFavoritesByID(favID);
+                }
+            }
+        };
+        historyList.setOnItemClickListener(listener);
+
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        Log.d(TAG, v.toString());
     }
 }
