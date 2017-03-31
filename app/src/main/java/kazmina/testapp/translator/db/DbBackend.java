@@ -4,12 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
  * апи базы данных
  */
 
 public class DbBackend implements DBContract {
+    private String TAG = "DbBackend";
     private final TranslatorDBHelper mDBHelper;
     public DbBackend(Context context) {
         mDBHelper = new TranslatorDBHelper(context);
@@ -35,15 +37,51 @@ public class DbBackend implements DBContract {
      */
     public Cursor getHistoryWithFav(){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        String[] columns = new String[] { History.ID , History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO, History.FAV_ID};
-        String orderBy = History.ID + " DESC";
-        Cursor c = db.query(HISTORY_WITH_FAV, columns, null, null, null, null, orderBy);
+        Cursor c = null;
+        try {
+            db.beginTransaction();
+            String[] columns = new String[]{History.ID, History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO, History.FAV_ID};
+            String orderBy = History.ID + " DESC";
+            c = db.query(HISTORY_WITH_FAV, columns, null, null, null, null, orderBy);
+            if (c != null) {
+                c.moveToFirst();
+            }
+        }catch (Exception e){
+            Log.d(TAG, "msg=" + e.getMessage());
+        }finally {
+            db.endTransaction();
+        }
+        return c;
+    }
+
+
+    public void showFav(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.beginTransaction();
+        String sql = "SeLECT * FROM " + FAVORITES;
+        Cursor cursor = db.rawQuery(sql, null);
+        Log.d(TAG, "count=" + cursor.getCount());
+        while (cursor.moveToNext()) {
+            int i = 0;
+            while (i < cursor.getColumnCount()) {
+                Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
+                i++;
+            }
+
+        }
+        cursor.close();
+        db.endTransaction();
+    }
+    public Cursor getFav(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        String[] columns = new String[] { Favorites.ID , Favorites.TEXT, Favorites.RESULT, Favorites.DIRECTION_FROM, Favorites.DIRECTION_TO};
+        String orderBy = Favorites.ID + " DESC";
+        Cursor c = db.query(FAVORITES, columns, null, null, null, null, orderBy);
         if (c != null) {
             c.moveToFirst();
         }
         return c;
     }
-
     /**
      * добавляет результат перевода в избранное
      * @param text - исходный текст
@@ -58,8 +96,8 @@ public class DbBackend implements DBContract {
         * */
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         boolean inserted = false;
-        db.beginTransaction();
         try {
+            db.beginTransaction();
             ContentValues values = new ContentValues();
             values.put(History.TEXT, text);
             values.put(History.RESULT, result);
@@ -79,6 +117,27 @@ public class DbBackend implements DBContract {
     public void copyHistoryItemToFavorites(int itemID){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.beginTransaction();
-        db.execSQL("INSERT INTO " + FAVORITES + " SELECT * FROM " + HISTORY + "WHERE _id=?", new Object[itemID]);
+        String sql = ("INSERT INTO "+ FAVORITES + "("
+                    + Favorites.TEXT + ", "
+                    + Favorites.RESULT + ", "
+                    + Favorites.DIRECTION_FROM + ", "
+                    + Favorites.DIRECTION_TO
+                + ") "
+                + " SELECT "
+                    + HISTORY + "."+ History.TEXT + ", "
+                    + HISTORY + "."+ History.RESULT + ", "
+                    + HISTORY + "."+ History.DIRECTION_FROM + ", "
+                    + HISTORY + "."+ History.DIRECTION_TO
+                +" FROM " + HISTORY + " WHERE _id=" + itemID);
+        db.execSQL(sql);
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void removeFromFavoritesByID(int itemID){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.beginTransaction();
+        db.delete(FAVORITES, "_id=?", new String[itemID]);
+        db.endTransaction();
     }
 }
