@@ -16,6 +16,7 @@ import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBContract;
 import kazmina.testapp.translator.db.DBNotificationManager;
 import kazmina.testapp.translator.db.DBProvider;
+import kazmina.testapp.translator.navigation.BottomNavigationListener;
 
 /**
  * история переводов
@@ -32,27 +33,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
             refreshHistoryData();
         }
     };
-    private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                    startActivity(intent);
-                    return true;
-                case R.id.navigation_favorites:
-
-                    return true;
-                case R.id.navigation_settings:
-
-                    return true;
-            }
-            return false;
-        }
-
-    };
+    private BottomNavigationListener mBottomNavigationListener = new BottomNavigationListener(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +42,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         mDBNotificationManager = DBContainer.getNotificationInstance(this);
         mDBNotificationManager.addListener(mDbListener);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
         mHistoryList = (ListView)findViewById(R.id.historyList);
 
 

@@ -19,6 +19,7 @@ import java.util.Locale;
 import kazmina.testapp.translator.interfaces.SaveResultAction;
 import kazmina.testapp.translator.interfaces.ShowResultAction;
 import kazmina.testapp.translator.interfaces.TranslateResultHandler;
+import kazmina.testapp.translator.navigation.BottomNavigationListener;
 import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,33 +29,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final String TAG = "MainActivity";
     private TranslateWatcher mTranslateWatcher;
     private List<TranslateResultHandler> mResultHandlers;
-    private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-
-                    return true;
-                case R.id.navigation_favorites:
-
-                    return true;
-                case R.id.navigation_settings:
-
-                    return true;
-            }
-            return false;
-        }
-
-    };
+    private BottomNavigationListener mBottomNavigationListener = new BottomNavigationListener(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
 
 
 
@@ -105,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mResultHandlers = new ArrayList<>();
         mResultHandlers.add(showResultAction);
         mResultHandlers.add(saveResultAction);
+        setWatcher();
     }
 
     @Override
