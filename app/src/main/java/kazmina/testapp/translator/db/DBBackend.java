@@ -10,13 +10,13 @@ import android.util.Log;
  * апи базы данных
  */
 
-public class DbBackend implements DBContract {
-    private String TAG = "DbBackend";
+public class DBBackend implements DBContract {
+    private String TAG = "DBBackend";
     private final TranslatorDBHelper mDBHelper;
-    public DbBackend(Context context) {
+    public DBBackend(Context context) {
         mDBHelper = new TranslatorDBHelper(context);
     }
-    public DbBackend(TranslatorDBHelper dbOpenHelper) {
+    public DBBackend(TranslatorDBHelper dbOpenHelper) {
         mDBHelper = dbOpenHelper;
     }
     public Cursor getTranslateHistory() {
@@ -137,7 +137,7 @@ public class DbBackend implements DBContract {
     public void removeFromFavoritesByID(int itemID){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.beginTransaction();
-        db.delete(FAVORITES, "_id=?", new String[itemID]);
+        db.delete(FAVORITES, "_id=?", new String[]{String.valueOf(itemID)});
         db.endTransaction();
     }
 }

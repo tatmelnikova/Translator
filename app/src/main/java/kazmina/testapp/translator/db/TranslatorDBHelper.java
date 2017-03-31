@@ -15,8 +15,8 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
-        /*db.execSQL("DROP TABLE " + HISTORY);
-        db.execSQL("DROP TABLE " + FAVORITES);
+        /*db.execSQL("DROP TABLE IF EXISTS " + HISTORY );
+        db.execSQL("DROP TABLE IF EXISTS " + FAVORITES );
         onCreate(db);
         */
     }

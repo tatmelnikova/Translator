@@ -5,20 +5,19 @@ import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import kazmina.testapp.translator.db.DbBackend;
+import kazmina.testapp.translator.db.DBBackend;
 
 /**
  * адаптер для списка элементов истории
  */
 
-public class HistoryCursorAdapter extends CursorAdapter implements DbBackend.History{
+public class HistoryCursorAdapter extends CursorAdapter implements DBBackend.History{
      private String mDelimeter = "-";
     String TAG = "HistoryCursorAdapter";
      HistoryCursorAdapter(Context context, Cursor c, int flags) {

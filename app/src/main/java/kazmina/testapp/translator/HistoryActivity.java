@@ -12,8 +12,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBContract;
-import kazmina.testapp.translator.db.DbBackend;
+import kazmina.testapp.translator.db.DBNotificationManager;
+import kazmina.testapp.translator.db.DBProvider;
 
 /**
  * история переводов
@@ -21,6 +23,15 @@ import kazmina.testapp.translator.db.DbBackend;
 
 public class HistoryActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "HistoryActivity";
+    private DBProvider mDBProvider;
+    private DBNotificationManager mDBNotificationManager;
+    ListView mHistoryList;
+    private DBNotificationManager.Listener mDbListener = new DBNotificationManager.Listener(){
+        @Override
+        public void onDataUpdated() {
+            refreshHistoryData();
+        }
+    };
     private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -46,33 +57,54 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+        mDBProvider = DBContainer.getProviderInstance(this);
+        mDBNotificationManager = DBContainer.getNotificationInstance(this);
+        mDBNotificationManager.addListener(mDbListener);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mHistoryList = (ListView)findViewById(R.id.historyList);
 
-        DbBackend backend = new DbBackend(getBaseContext());
-        Cursor cursor = backend.getHistoryWithFav();
-        HistoryCursorAdapter historyCursorAdapter = new HistoryCursorAdapter(getBaseContext(), cursor, 1);
-        ListView historyList = (ListView)findViewById(R.id.historyList);
-        historyList.setAdapter(historyCursorAdapter);
+
+        refreshHistoryData();
+
         ListView.OnItemClickListener listener = new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor c = ((HistoryCursorAdapter)parent.getAdapter()).getCursor();
                 c.moveToPosition(position);
-                DbBackend backend = new DbBackend(getBaseContext());
                 if (c.isNull(c.getColumnIndex(DBContract.History.FAV_ID))){
                     Integer historyID = c.getInt(c.getColumnIndex(DBContract.History.ID));
-                    backend.copyHistoryItemToFavorites(historyID);
+                    mDBProvider.copyHistoryItemToFavorites(historyID);
+
                 }else{
                     Integer favID = c.getInt(c.getColumnIndex(DBContract.History.FAV_ID));
-                    backend.removeFromFavoritesByID(favID);
+                    Log.d("TAG", "favid="+favID);
+                    mDBProvider.removeFromFavoritesById(favID);
                 }
             }
         };
-        historyList.setOnItemClickListener(listener);
+        mHistoryList.setOnItemClickListener(listener);
+
 
     }
 
+    public void refreshHistoryData(){
+        Log.d(TAG, "refresh");
+        mDBProvider.getHistoryWithFav(new DBProvider.ResultCallback<Cursor>() {
+            @Override
+            public void onFinished(final Cursor result) {
+                HistoryCursorAdapter historyCursorAdapter;
+                if (mHistoryList.getAdapter() != null) {
+                    historyCursorAdapter = ((HistoryCursorAdapter) mHistoryList.getAdapter());
+                    historyCursorAdapter.changeCursor(result);
+                }else{
+                    historyCursorAdapter = new HistoryCursorAdapter(getBaseContext(), result, 1);
+                    mHistoryList.setAdapter(historyCursorAdapter);
+                }
+
+            }
+        });
+    }
 
     @Override
     public void onClick(View v) {
