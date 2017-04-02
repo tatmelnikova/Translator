@@ -2,7 +2,8 @@ package kazmina.testapp.translator.interfaces;
 
 import android.content.Context;
 
-import kazmina.testapp.translator.db.DBBackend;
+import kazmina.testapp.translator.db.DBContainer;
+import kazmina.testapp.translator.db.DBProvider;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 /**
@@ -11,7 +12,9 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 public class SaveResultAction implements TranslateResultHandler {
     private Context mContext;
-
+    private TranslateResult mTranslateResult = null;
+    private String mText = null;
+    private boolean mSaved = false;
     public SaveResultAction(Context context) {
         super();
         mContext = context;
@@ -19,8 +22,18 @@ public class SaveResultAction implements TranslateResultHandler {
 
     @Override
     public boolean processResult(String text, TranslateResult translateResult) {
-        DBBackend backend = new DBBackend(mContext);
-        String[] resultLangs = translateResult.getLang().split("-");
-        return backend.insertHistoryItem(text, translateResult.getText()[0], resultLangs[0], resultLangs[1]);
+        mText = text;
+        mTranslateResult = translateResult;
+        mSaved = false;
+        return true;
+    }
+
+    public void saveHistoryItem(){
+        if (mTranslateResult != null && !mSaved) {
+            DBProvider provider = DBContainer.getProviderInstance(mContext);
+            String[] resultLangs = mTranslateResult.getLang().split("-");
+            provider.insertHistoryItem(mText, mTranslateResult.getText()[0], resultLangs[0], resultLangs[1]);
+            mSaved = true;
+        }
     }
 }

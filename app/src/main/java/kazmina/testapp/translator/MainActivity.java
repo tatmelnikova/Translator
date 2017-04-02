@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TranslateWatcher mTranslateWatcher;
     private List<TranslateResultHandler> mResultHandlers;
     private BottomNavigationListener mBottomNavigationListener = new BottomNavigationListener(this);
+    private SaveResultAction mSaveResultAction = new SaveResultAction(this);
+    private EditText mTranslateText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
 
-
+        mTranslateText = (EditText) findViewById(R.id.editTextInput);
+        mTranslateText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus){
+                    mSaveResultAction.saveHistoryItem();
+                }
+            }
+        });
 
         YandexTranslateApi api = TranslatorApplication.getApi();
         String langID = Locale.getDefault().getLanguage();
@@ -71,10 +81,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void setWatcher(){
         TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
-        EditText text = (EditText) findViewById(R.id.editTextInput);
-        text.removeTextChangedListener(mTranslateWatcher);
+        mTranslateText.removeTextChangedListener(mTranslateWatcher);
         mTranslateWatcher = new TranslateWatcher( app.getLangFrom(), app.getLangTo(), mResultHandlers);
-        text.addTextChangedListener(mTranslateWatcher);
+        mTranslateText.addTextChangedListener(mTranslateWatcher);
+
     }
 
     @Override
@@ -83,16 +93,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupCurrentTranslateDirection();
         TextView resultView = (TextView)findViewById(R.id.textViewResult);
         ShowResultAction showResultAction = new ShowResultAction(resultView);
-        SaveResultAction saveResultAction = new SaveResultAction(getBaseContext());
+
         mResultHandlers = new ArrayList<>();
         mResultHandlers.add(showResultAction);
-        mResultHandlers.add(saveResultAction);
+        mResultHandlers.add(mSaveResultAction);
         setWatcher();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        mSaveResultAction.saveHistoryItem();
         mResultHandlers = null;
     }
 
