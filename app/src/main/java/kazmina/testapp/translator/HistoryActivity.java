@@ -46,7 +46,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         mViewPagerAdapter.addFragment(new HistoryListFragment(), "History");
-        mViewPagerAdapter.addFragment(new HistoryListFragment(), "Favorites");
+        mViewPagerAdapter.addFragment(new FavoritesListFragment(), "Favorites");
         mViewPager.setAdapter(mViewPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
 

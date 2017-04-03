@@ -26,7 +26,7 @@ public class HistoryListFragment extends ListFragment {
     private String TAG = "HistoryListFragment";
     DBProvider mDBProvider;
     private DBNotificationManager mDBNotificationManager;
-    private String mSearchText = null;
+    protected String mSearchText = null;
     private DBNotificationManager.Listener mDbListener = new DBNotificationManager.Listener(){
         @Override
         public void onDataUpdated() {
