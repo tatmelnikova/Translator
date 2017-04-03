@@ -77,11 +77,18 @@ public class DBBackend implements DBContract {
         cursor.close();
         db.endTransaction();
     }
-    public Cursor getFav(){
+    public Cursor getFav(String searchText){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        String[] columns = new String[] { Favorites.ID , Favorites.TEXT, Favorites.RESULT, Favorites.DIRECTION_FROM, Favorites.DIRECTION_TO};
-        String orderBy = Favorites.ID + " DESC";
-        Cursor c = db.query(FAVORITES, columns, null, null, null, null, orderBy);
+        String[] columns = new String[] { History.ID , History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO, History.FAV_ID};
+        String orderBy = History.ID + " DESC";
+        String where = null; String[] args = null;
+        if (searchText != null) {
+            where = "(" + History.TEXT + " like ? OR " + History.RESULT + "  like ? ) AND " + History.FAV_ID + " IS NOT NULL";
+            args = new String[]{"%".concat(searchText).concat("%")};
+        }else{
+            where = History.FAV_ID + " IS NOT NULL";
+        }
+        Cursor c = db.query(HISTORY_WITH_FAV, columns, where, args, null, null, orderBy);
         if (c != null) {
             c.moveToFirst();
         }
