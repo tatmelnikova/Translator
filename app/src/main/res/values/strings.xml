@@ -3,5 +3,6 @@
     <string name="title_settings">Настройки</string>
     <string name="title_favorites">Избранное</string>
     <string name="title_translate">Перевод</string>
-    <string name="title_swap_languages">Поменять местами</string>
+    <string name="title_swap_languages">Поменять языки местами</string>
+    <string name="translate_hint">Введите текст</string>
 </resources>
