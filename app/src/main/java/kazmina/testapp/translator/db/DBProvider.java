@@ -53,6 +53,21 @@ public class DBProvider {
         });
     }
 
+
+    public void getFavorites(final String searchText, final ResultCallback<Cursor> callback){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final Cursor c = mDBBackend.getFav(searchText);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onFinished(c);
+                    }
+                });
+            }
+        });
+    }
     public void insertHistoryItem(final String text, final String result, final String from, final String to) {
         mExecutor.execute(new Runnable() {
             @Override
