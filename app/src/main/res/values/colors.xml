@@ -3,6 +3,10 @@
     <color name="colorPrimary">#2196f3</color>
     <color name="colorPrimaryDark">#1976d2</color>
     <color name="colorAccent">#ff9800</color>
-    <color name="colorDisabled">#999</color>
-    <color name="textInverseColor">#fff</color>
+    <color name="colorWhite">#fff</color>
+    <color name="colorGray">#999</color>
+    <color name="colorDisabled">@color/colorGray</color>
+    <color name="textInverseColor">@color/colorWhite</color>
+    <color name="textMainColor">#000</color>
+    <color name="textSubColor">@color/colorGray</color>
 </resources>

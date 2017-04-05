@@ -4,4 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="inner_block_padding">8dp</dimen>
     <dimen name="large_font_size">18sp</dimen>
+    <dimen name="fav_icon_width">36dp</dimen>
+    <dimen name="fav_icon_height">36dp</dimen>
+    <dimen name="fav_icon_padding">6dp</dimen>
+    <dimen name="direction_col_width">64dp</dimen>
 </resources>

@@ -3,23 +3,26 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-
+                style="@style/historyListItem"
+                android:layout_gravity="center_vertical"
                 android:orientation="vertical">
 
-   <TextView
+    <TextView
         android:id="@+id/textViewText"
+        style="@style/historyTextFrom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentTop="false"
         android:layout_toLeftOf="@+id/textViewDirection"
         android:layout_toStartOf="@+id/textViewDirection"
-        android:text="text"/>
+    />
 
 
        <TextView
            android:id="@+id/textViewResult"
+           style="@style/historyTextTo"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:layout_alignParentLeft="true"
@@ -31,23 +34,25 @@
 
        <TextView
            android:id="@+id/textViewDirection"
-           android:layout_width="100dp"
+           android:layout_width="@dimen/direction_col_width"
+           android:textAllCaps="true"
            android:layout_height="match_parent"
-
-           android:layout_alignParentTop="true"
-
+           android:layout_centerVertical="true"
            android:layout_toLeftOf="@+id/imageViewFav"
            android:layout_toStartOf="@+id/imageViewFav"/>
 
-           <ImageView
-               android:id="@+id/imageViewFav"
-               android:layout_width="100dp"
-               android:layout_height="match_parent"
-               android:layout_alignParentEnd="true"
-               android:layout_alignParentRight="true"
-               android:background="@android:color/transparent"
-               android:focusable="false"
-               android:focusableInTouchMode="false"
-               android:src="@drawable/ic_favorite_white_24dp"/>
+    <ImageView
+        android:id="@+id/imageViewFav"
+        android:layout_width="@dimen/fav_icon_width"
+        android:layout_height="@dimen/fav_icon_height"
+        android:padding="@dimen/fav_icon_padding"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/fav_icon_title"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:src="@drawable/ic_favorite_white_24dp"/>
 
    </RelativeLayout>
