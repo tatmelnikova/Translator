@@ -34,10 +34,8 @@
 
        <TextView
            android:id="@+id/textViewDirection"
-           android:layout_width="@dimen/direction_col_width"
-           android:textAllCaps="true"
+           style="@style/historyTextDirection"
            android:layout_height="match_parent"
-           android:layout_centerVertical="true"
            android:layout_toLeftOf="@+id/imageViewFav"
            android:layout_toStartOf="@+id/imageViewFav"/>
 

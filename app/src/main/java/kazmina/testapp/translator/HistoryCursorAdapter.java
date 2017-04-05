@@ -54,7 +54,7 @@ public class HistoryCursorAdapter extends CursorAdapter implements DBBackend.His
         if (!cursor.isNull(cursor.getColumnIndex(FAV_ID))) {
             Integer favID = cursor.getInt(cursor.getColumnIndex(FAV_ID));
 
-            holder.imageViewFav.setColorFilter(colorActive, PorterDuff.Mode.LIGHTEN);
+            holder.imageViewFav.setColorFilter(colorActive, PorterDuff.Mode.MULTIPLY);
             holder.imageViewFav.setTag(favID);
         }else{
             holder.imageViewFav.setColorFilter(colorDisabled, PorterDuff.Mode.MULTIPLY);
