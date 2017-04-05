@@ -40,13 +40,14 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_history);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setSelectedItemId(R.id.navigation_favorites);
         navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
 
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mViewPagerAdapter.addFragment(new HistoryListFragment(), "History");
-        mViewPagerAdapter.addFragment(new FavoritesListFragment(), "Favorites");
+        mViewPagerAdapter.addFragment(new HistoryListFragment(), getString(R.string.tab_history));
+        mViewPagerAdapter.addFragment(new FavoritesListFragment(), getString(R.string.tab_favorites));
         mViewPager.setAdapter(mViewPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
 
