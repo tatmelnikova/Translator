@@ -5,4 +5,6 @@
     <string name="title_translate">Перевод</string>
     <string name="title_swap_languages">Поменять языки местами</string>
     <string name="translate_hint">Введите текст</string>
+    <string name="tab_history">История</string>
+    <string name="tab_favorites">Избранное</string>
 </resources>
