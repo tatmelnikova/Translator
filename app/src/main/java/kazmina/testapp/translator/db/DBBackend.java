@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import kazmina.testapp.translator.retrofitModels.TranslateResult;
+
 /**
  * апи базы данных
  */
@@ -155,6 +157,70 @@ public class DBBackend implements DBContract {
             db.endTransaction();
         }catch (Exception e){
             Log.d(TAG, e.getMessage());
+        }
+    }
+
+    public void showHistory(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.beginTransaction();
+        String sql = "SeLECT * FROM " + HISTORY;
+        Cursor cursor = db.rawQuery(sql, null);
+        Log.d(TAG, "count=" + cursor.getCount());
+        while (cursor.moveToNext()) {
+            int i = 0;
+            while (i < cursor.getColumnCount()) {
+                Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
+                i++;
+            }
+
+        }
+        cursor.close();
+        db.endTransaction();
+    }
+    boolean resultIsValid(TranslateResult translateResult){
+        ResultChecker checker = new ResultChecker();
+        return checker.resultIsValid(translateResult);
+    }
+    /**
+     * класс для проверки валидности результата перевода
+     */
+
+    private class ResultChecker implements DBContract {
+        private final String TAG = "ResultChecker";
+
+        boolean resultIsValid(TranslateResult translateResult){
+            return resultHasText(translateResult) && resultIsUnique(translateResult);
+        }
+        boolean resultHasText(TranslateResult translateResult){
+            boolean result = true;
+            if (translateResult.getLang() == null || translateResult.getText() == null){
+                result = false;
+                Log.d(TAG, "result is empty");
+            }else{
+                Log.d(TAG, "result is not empty");
+            }
+            return result;
+        }
+
+        boolean resultIsUnique(TranslateResult translateResult){
+            boolean isUnique = true;
+            Cursor c = null;
+            try {
+                SQLiteDatabase db = mDBHelper.getWritableDatabase();
+                String[] columns = new String[]{History.ID, History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO};
+                String where = History.RESULT + "  = ? AND " + History.DIRECTION_FROM + "= ? AND " + History.DIRECTION_TO + " =?";
+                String[] args = new String[]{translateResult.getPlainText(), translateResult.getLangFrom(), translateResult.getLangTo()};
+                c = db.query(HISTORY, columns, where, args, null, null, null);
+                if (c.getCount() > 0) {
+                    isUnique = false;
+                }
+                c.close();
+            }catch (Exception e){
+                Log.d(TAG, ""+e.getMessage());
+            }finally {
+                if (c!=null) c.close();
+            }
+            return isUnique;
         }
     }
 }

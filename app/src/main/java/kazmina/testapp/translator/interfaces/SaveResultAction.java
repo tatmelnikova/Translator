@@ -30,10 +30,14 @@ public class SaveResultAction implements TranslateResultHandler {
 
     public void saveHistoryItem(){
         if (mTranslateResult != null && !mSaved) {
-            DBProvider provider = DBContainer.getProviderInstance(mContext);
-            String[] resultLangs = mTranslateResult.getLang().split("-");
-            provider.insertHistoryItem(mText, mTranslateResult.getText()[0], resultLangs[0], resultLangs[1]);
-            mSaved = true;
+            final DBProvider provider = DBContainer.getProviderInstance(mContext);
+            provider.checkResultValidity(mTranslateResult, new DBProvider.ResultCallback<TranslateResult>() {
+               @Override
+               public void onFinished(TranslateResult result) {
+                   provider.insertHistoryItem(mText, result );
+                   mSaved = true;
+               }
+            });
         }
     }
 }

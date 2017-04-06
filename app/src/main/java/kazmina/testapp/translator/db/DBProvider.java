@@ -9,6 +9,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import kazmina.testapp.translator.retrofitModels.TranslateResult;
+
 /**
  * Created by user on 31/07/2016.
  */
@@ -68,11 +70,11 @@ public class DBProvider {
             }
         });
     }
-    public void insertHistoryItem(final String text, final String result, final String from, final String to) {
+    public void insertHistoryItem(final String text, final TranslateResult translateResult) {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                mDBBackend.insertHistoryItem(text, result, from, to);
+                mDBBackend.insertHistoryItem(text, translateResult.getPlainText(), translateResult.getLangFrom(), translateResult.getLangTo());
                 mDBNotificationManager.notifyListeners();
             }
         });
@@ -94,6 +96,23 @@ public class DBProvider {
             public void run() {
                 mDBBackend.removeFromFavoritesByID(itemId);
                 mDBNotificationManager.notifyListeners();
+            }
+        });
+    }
+
+    public void checkResultValidity(final TranslateResult translateResult, final ResultCallback<TranslateResult> callback){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                boolean isValid = mDBBackend.resultIsValid(translateResult);
+                if (isValid) {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onFinished(translateResult);
+                        }
+                    });
+                }
             }
         });
     }
