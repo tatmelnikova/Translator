@@ -1,6 +1,7 @@
 package kazmina.testapp.translator.interfaces;
 
 import android.content.Context;
+import android.util.Log;
 
 import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBProvider;
@@ -15,9 +16,12 @@ public class SaveResultAction implements TranslateResultHandler {
     private TranslateResult mTranslateResult = null;
     private String mText = null;
     private boolean mSaved = false;
+    private boolean mSaveImmediate = false;
+
+
     public SaveResultAction(Context context) {
         super();
-        mContext = context;
+        mContext = context.getApplicationContext();
     }
 
     @Override
@@ -25,7 +29,15 @@ public class SaveResultAction implements TranslateResultHandler {
         mText = text;
         mTranslateResult = translateResult;
         mSaved = false;
+        if (mSaveImmediate) saveHistoryItem();
         return true;
+    }
+
+    /**
+     * @param immediate = true, если нужно сохранять результат перевода сразу при готовности
+     */
+    public void setSaveImmediate(boolean immediate){
+        mSaveImmediate = immediate;
     }
 
     public void saveHistoryItem(){

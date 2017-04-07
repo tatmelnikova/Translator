@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TranslateWatcher mTranslateWatcher;
     private List<TranslateResultHandler> mResultHandlers;
     private BottomNavigationListener mBottomNavigationListener = new BottomNavigationListener(this);
-    private SaveResultAction mSaveResultAction = new SaveResultAction(this);
+    private SaveResultAction mSaveResultAction;
     private EditText mTranslateText;
 
     @Override
@@ -40,13 +40,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
 
+
+        mSaveResultAction = new SaveResultAction(this);
         mTranslateText = (EditText) findViewById(R.id.editTextInput);
         mTranslateText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus){
-                    mSaveResultAction.saveHistoryItem();
-                }
+                mSaveResultAction.setSaveImmediate(!hasFocus);
             }
         });
 
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPause() {
         super.onPause();
-        mSaveResultAction.saveHistoryItem();
+        mSaveResultAction.setSaveImmediate(true);
         mResultHandlers = null;
     }
 
