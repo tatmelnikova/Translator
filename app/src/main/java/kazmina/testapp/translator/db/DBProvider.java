@@ -100,11 +100,11 @@ public class DBProvider {
         });
     }
 
-    public void checkResultValidity(final TranslateResult translateResult, final ResultCallback<TranslateResult> callback){
+    public void checkResultValidity(final String text, final TranslateResult translateResult, final ResultCallback<TranslateResult> callback){
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                boolean isValid = mDBBackend.resultIsValid(translateResult);
+                boolean isValid = mDBBackend.resultIsValid(text, translateResult);
                 if (isValid) {
                     mHandler.post(new Runnable() {
                         @Override

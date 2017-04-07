@@ -31,7 +31,7 @@ public class SaveResultAction implements TranslateResultHandler {
     public void saveHistoryItem(){
         if (mTranslateResult != null && !mSaved) {
             final DBProvider provider = DBContainer.getProviderInstance(mContext);
-            provider.checkResultValidity(mTranslateResult, new DBProvider.ResultCallback<TranslateResult>() {
+            provider.checkResultValidity(mText, mTranslateResult, new DBProvider.ResultCallback<TranslateResult>() {
                @Override
                public void onFinished(TranslateResult result) {
                    provider.insertHistoryItem(mText, result );

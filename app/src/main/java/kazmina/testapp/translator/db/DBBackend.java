@@ -177,9 +177,9 @@ public class DBBackend implements DBContract {
         cursor.close();
         db.endTransaction();
     }
-    boolean resultIsValid(TranslateResult translateResult){
+    boolean resultIsValid(String text, TranslateResult translateResult){
         ResultChecker checker = new ResultChecker();
-        return checker.resultIsValid(translateResult);
+        return checker.resultIsValid(text, translateResult);
     }
     /**
      * класс для проверки валидности результата перевода
@@ -188,12 +188,16 @@ public class DBBackend implements DBContract {
     private class ResultChecker implements DBContract {
         private final String TAG = "ResultChecker";
 
-        boolean resultIsValid(TranslateResult translateResult){
-            return resultHasText(translateResult) && resultIsUnique(translateResult);
+        boolean resultIsValid(String text, TranslateResult translateResult){
+            return resultHasText(text, translateResult) && resultIsUnique(text, translateResult);
         }
-        boolean resultHasText(TranslateResult translateResult){
+        boolean resultHasText(String text, TranslateResult translateResult){
             boolean result = true;
-            if (translateResult.getLang() == null || translateResult.getText() == null){
+            if (
+                    isEmpty(text)
+                    || isEmpty(translateResult.getLang())
+                    || isEmpty(translateResult.getPlainText())
+                ){
                 result = false;
                 Log.d(TAG, "result is empty");
             }else{
@@ -202,14 +206,21 @@ public class DBBackend implements DBContract {
             return result;
         }
 
-        boolean resultIsUnique(TranslateResult translateResult){
+        private boolean isEmpty(String text){
+            boolean isEmpty = true;
+            if (text != null){
+               if (text.matches("\\S+")) isEmpty = false;
+            }
+            return isEmpty;
+        }
+        boolean resultIsUnique(String text, TranslateResult translateResult){
             boolean isUnique = true;
             Cursor c = null;
             try {
                 SQLiteDatabase db = mDBHelper.getWritableDatabase();
                 String[] columns = new String[]{History.ID, History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO};
-                String where = History.RESULT + "  = ? AND " + History.DIRECTION_FROM + "= ? AND " + History.DIRECTION_TO + " =?";
-                String[] args = new String[]{translateResult.getPlainText(), translateResult.getLangFrom(), translateResult.getLangTo()};
+                String where = History.TEXT + " = ? AND " + History.RESULT + "  = ? AND " + History.DIRECTION_FROM + "= ? AND " + History.DIRECTION_TO + " =?";
+                String[] args = new String[]{text, translateResult.getPlainText(), translateResult.getLangFrom(), translateResult.getLangTo()};
                 c = db.query(HISTORY, columns, where, args, null, null, null);
                 if (c.getCount() > 0) {
                     isUnique = false;
