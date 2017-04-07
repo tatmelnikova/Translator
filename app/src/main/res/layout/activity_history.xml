@@ -2,21 +2,43 @@
 <LinearLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabs"
-        style="@style/AppTabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
+    <RelativeLayout
+        style="@style/tabHeader"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/imageButtonDelete"
+            style="@style/buttonDeleteHistory"
+            android:layout_width="@dimen/button_delete_history_width"
+            android:layout_height="@dimen/button_delete_history_width"
+            android:layout_alignBottom="@+id/tabs"
+            android:layout_alignParentRight="true"
+            android:contentDescription="@string/title_delete_history"
+            app:srcCompat="@drawable/ic_delete_white_24dp"
+            tools:ignore="RtlHardcoded"/>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            style="@style/AppTabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            style="@style/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/tabs"
+            />
+    </RelativeLayout>
 
 
 
@@ -24,7 +46,8 @@
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
-        app:menu="@menu/navigation" />
+        app:menu="@menu/navigation"/>
 </LinearLayout>

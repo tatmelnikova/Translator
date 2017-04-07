@@ -8,4 +8,5 @@
     <string name="tab_history">История</string>
     <string name="tab_favorites">Избранное</string>
     <string name="fav_icon_title">В избранное</string>
+    <string name="title_delete_history">Удалить историю</string>
 </resources>

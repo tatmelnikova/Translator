@@ -38,8 +38,15 @@
         <item name="tabSelectedTextColor">@color/textInverseColor</item>
         <item name="tabBackground">@color/colorPrimary</item>
         <item name="tabTextColor">@color/textInverseColor</item>
+        <item name="android:layout_marginRight">@dimen/tab_layout_margin</item>
+        <item name="android:layout_marginLeft">@dimen/tab_layout_margin</item>
     </style>
-
+    <style name="tabHeader">
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+    <style name="viewPager">
+        <item name="android:background">@color/colorWhite</item>
+    </style>
     <style name="historySearchView" parent="Base.Widget.AppCompat.SearchView">
         <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingRight">0dp</item>
@@ -64,5 +71,9 @@
         <item name="android:layout_width">@dimen/direction_col_width</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:layout_centerVertical">true</item>
+        <item name="android:maxLines">1</item>
+    </style>
+    <style name="buttonDeleteHistory">
+        <item name="android:background">@null</item>
     </style>
 </resources>

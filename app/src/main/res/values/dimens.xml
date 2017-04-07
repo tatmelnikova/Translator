@@ -8,4 +8,6 @@
     <dimen name="fav_icon_height">36dp</dimen>
     <dimen name="fav_icon_padding">6dp</dimen>
     <dimen name="direction_col_width">64dp</dimen>
+    <dimen name="tab_layout_margin">48dp</dimen>
+    <dimen name="button_delete_history_width">48dp</dimen>
 </resources>
