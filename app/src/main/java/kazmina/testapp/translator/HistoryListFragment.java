@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import kazmina.testapp.translator.db.DBContainer;
@@ -23,7 +22,7 @@ import kazmina.testapp.translator.db.DBProvider;
  */
 
 public class HistoryListFragment extends ListFragment {
-    private String TAG = "HistoryListFragment";
+    private String TAG = "HISTORY";
     DBProvider mDBProvider;
     private DBNotificationManager mDBNotificationManager;
     protected String mSearchText = null;
@@ -50,7 +49,11 @@ public class HistoryListFragment extends ListFragment {
     public HistoryListFragment() {
         super();
     }
+    
 
+    public void clearList(){
+        mDBProvider.clearHistory();
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
@@ -70,6 +73,8 @@ public class HistoryListFragment extends ListFragment {
         });
         return view;
     }
+
+
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {

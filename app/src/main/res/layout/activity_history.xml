@@ -16,6 +16,7 @@
         <ImageButton
             android:id="@+id/imageButtonDelete"
             style="@style/buttonDeleteHistory"
+            android:onClick="onClick"
             android:layout_width="@dimen/button_delete_history_width"
             android:layout_height="@dimen/button_delete_history_width"
             android:layout_alignBottom="@+id/tabs"

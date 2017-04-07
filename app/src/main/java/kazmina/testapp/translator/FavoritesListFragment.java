@@ -11,6 +11,12 @@ import kazmina.testapp.translator.db.DBProvider;
 
 public class FavoritesListFragment extends HistoryListFragment {
     private String TAG = "FavoritesListFragment";
+
+    @Override
+    public void clearList() {
+       mDBProvider.clearFavorites();
+    }
+
     public void refreshHistoryData(){
         Log.d(TAG, "refresh");
         mDBProvider.getFavorites(mSearchText, new DBProvider.ResultCallback<Cursor>() {

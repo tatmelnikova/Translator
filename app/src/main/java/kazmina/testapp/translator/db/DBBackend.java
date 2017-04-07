@@ -34,10 +34,11 @@ public class DBBackend implements DBContract {
     }
 
     /**
-     * выбирает историю перевода + ID элемента в избранном, если он там есть
+     * выбирает историю перевода с фильтрацией по тексту + ID элемента в избранном, если он там есть
+     * * @param searchText - текст для поиска
      * @return курсор
      */
-    public Cursor getHistoryWithFav(String searchText){
+     Cursor getHistoryWithFav(String searchText){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         Cursor c = null;
         try {
@@ -79,7 +80,13 @@ public class DBBackend implements DBContract {
         cursor.close();
         db.endTransaction();
     }
-    public Cursor getFav(String searchText){
+
+    /**
+     * выборка записей из избранного с фильтрацией по тексту
+     * @param searchText - текст для поиска
+     * @return курсор
+     */
+    Cursor getFav(String searchText){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         String[] columns = new String[] { History.ID , History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO, History.FAV_ID};
         String orderBy = History.ID + " DESC";
@@ -128,7 +135,11 @@ public class DBBackend implements DBContract {
         return inserted;
     }
 
-    public void copyHistoryItemToFavorites(int itemID){
+    /**
+     * копирует запись из истории в избранное
+     * @param itemID - идентификатор нужной записи
+     */
+    void copyHistoryItemToFavorites(int itemID){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.beginTransaction();
         String sql = ("INSERT INTO "+ FAVORITES + "("
@@ -148,7 +159,10 @@ public class DBBackend implements DBContract {
         db.endTransaction();
     }
 
-    public void removeFromFavoritesByID(int itemID){
+    /**
+     * @param itemID - идентификатор записи, которую удаляем из избранного
+     */
+    void removeFromFavoritesByID(int itemID){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         try {
             db.beginTransaction();
@@ -180,6 +194,28 @@ public class DBBackend implements DBContract {
     boolean resultIsValid(String text, TranslateResult translateResult){
         ResultChecker checker = new ResultChecker();
         return checker.resultIsValid(text, translateResult);
+    }
+
+    /**
+     * очистка таблицы history
+     */
+    public void clearHistory(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.beginTransaction();
+        db.execSQL("delete from "+ HISTORY);
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    /**
+     * очистка таблицы избранного
+     */
+    void clearFavorites(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.beginTransaction();
+        db.execSQL("delete from "+ FAVORITES);
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
     /**
      * класс для проверки валидности результата перевода

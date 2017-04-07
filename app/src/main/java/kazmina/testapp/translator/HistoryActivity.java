@@ -1,32 +1,25 @@
 package kazmina.testapp.translator;
 
-import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.SearchView;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import kazmina.testapp.translator.navigation.BottomNavigationListener;
 
 /**
  * история переводов
  */
 
-public class HistoryActivity extends AppCompatActivity implements View.OnClickListener {
+public class HistoryActivity extends AppCompatActivity implements View.OnClickListener{
     private final String TAG = "HistoryActivity";
 
     TabLayout mTabLayout;
@@ -56,17 +49,31 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         Log.d(TAG, v.toString());
+        switch (v.getId()){
+            case R.id.imageButtonDelete:
+                deleteHistoryList();
+                break;
+            default:
+                break;
+        }
     }
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
+
+    public void deleteHistoryList(){
+        Log.d(TAG, "currentItem=" +mViewPager.getCurrentItem());
+        HistoryListFragment fragment = mViewPagerAdapter.getItem(mViewPager.getCurrentItem());
+        fragment.clearList();
+    }
+
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<HistoryListFragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
+        ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public HistoryListFragment getItem(int position) {
             return mFragmentList.get(position);
         }
 
@@ -75,7 +82,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
             return mFragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        void addFragment(HistoryListFragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }

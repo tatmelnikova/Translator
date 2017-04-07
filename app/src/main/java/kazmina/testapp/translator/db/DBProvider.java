@@ -116,6 +116,26 @@ public class DBProvider {
             }
         });
     }
+
+    public void clearHistory(){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDBBackend.clearHistory();
+                mDBNotificationManager.notifyListeners();
+            }
+        });
+    }
+
+    public void clearFavorites(){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDBBackend.clearFavorites();
+                mDBNotificationManager.notifyListeners();
+            }
+        });
+    }
     // TODO: make me multi-threaded!
     class CustomExecutor extends ThreadPoolExecutor {
         CustomExecutor() {
