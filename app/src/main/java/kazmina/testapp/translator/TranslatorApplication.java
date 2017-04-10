@@ -16,36 +16,6 @@ public class TranslatorApplication extends Application {
      */
     private LanguageLocalisation mLanguageLocalisation = null;
 
-    /**
-     * DEFAULT_LANG_TO, DEFAULT_LANG_FROM - языки перевода по умолчанию
-     */
-    private final String DEFAULT_LANG_FROM = "en";
-    private final String DEFAULT_LANG_TO = "ru";
-    /**
-     * mLangFrom - последний выбранный язык, с которого переводим
-     */
-    private String mLangFrom = DEFAULT_LANG_FROM;
-    /**
-     * mLangTo - последний выбранный язык, на который переводим
-     */
-    private String mLangTo = DEFAULT_LANG_TO;
-
-    public String getLangFrom() {
-        return mLangFrom;
-    }
-
-    public void setLangFrom(String langFrom) {
-        mLangFrom = langFrom;
-    }
-
-    public String getLangTo() {
-        return mLangTo;
-    }
-
-    public void setLangTo(String langTo) {
-        mLangTo = langTo;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
