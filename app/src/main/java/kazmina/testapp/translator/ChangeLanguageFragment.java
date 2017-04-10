@@ -1,22 +1,30 @@
 package kazmina.testapp.translator;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import kazmina.testapp.translator.db.DBContainer;
+import kazmina.testapp.translator.db.DBContract;
+import kazmina.testapp.translator.db.DBNotificationManager;
+import kazmina.testapp.translator.db.DBProvider;
 import kazmina.testapp.translator.interfaces.LanguageListener;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
@@ -27,19 +35,28 @@ import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
 
 public class ChangeLanguageFragment extends Fragment implements AdapterView.OnItemClickListener, LanguagesHolder {
     private LanguageLocalisation mLanguageLocalisation;
-    private final String LANG_ID_KEY = "LANG_ID";
-    private final String LANG_VALUE_KEY = "LANG_VALUE";
-    private final String LANG_CHECKED_KEY = "LANG_CHECKED";
 
     private String mCurrentLangCode;
     private String TAG = "ChangeLanguageFragment";
     private int mTargetView;
     private LanguageListener mListener;
+    private DBProvider mDBProvider;
+    private DBNotificationManager mDBNotificationManager;
+    ListView mListViewLangs;
 
+    private DBNotificationManager.Listener mDbListener = new DBNotificationManager.Listener(){
+        @Override
+        public void onDataUpdated() {
+            populateList();
+        }
+    };
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mDBProvider = DBContainer.getProviderInstance(context);
+        mDBNotificationManager = DBContainer.getNotificationInstance(context);
+        mDBNotificationManager.addListener(mDbListener);
         try {
             mListener = (LanguageListener) context;
         } catch (ClassCastException e) {
@@ -63,43 +80,37 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
         View view = inflater.inflate(R.layout.fragment_change_lang, container, false);
         TranslatorApplication app = ((TranslatorApplication) getContext().getApplicationContext());
         mLanguageLocalisation = app.getLanguageLocalisation();
-        ListView langsList = (ListView) view.findViewById(R.id.langsList);
-        ArrayList<Map<String, Object>> data = new ArrayList<>(
-                mLanguageLocalisation.getLangs().size());
-        Map<String, Object> m;
-        boolean checked;
-        int sPosition = -1;
-        int counter = 0;
-        for(Map.Entry<String, String> lang : mLanguageLocalisation.getLangs().entrySet() ){
-            m = new HashMap<>();
-            m.put(LANG_ID_KEY, lang.getKey());
-            m.put(LANG_VALUE_KEY, lang.getValue());
-            checked = (lang.getKey() != null) && (lang.getKey().equals(mCurrentLangCode));
-            m.put(LANG_CHECKED_KEY, checked);
-            data.add(m);
-            if (checked){
-                Log.d(TAG, m.toString());
-                sPosition = counter;
-            }
-            counter++;
-        }
-
-        String[] from = {  LANG_VALUE_KEY , LANG_CHECKED_KEY};
-        int[] to = { R.id.checkedTextViewLanguage, R.id.checkedTextViewLanguage};
-        SimpleAdapter sAdapter = new SimpleAdapter(getContext(), data, R.layout.lang_list_item, from, to);
-        langsList.setAdapter(sAdapter);
-        langsList.setOnItemClickListener(this);
-        langsList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        if (sPosition > 0) langsList.setItemChecked(sPosition, true);
+        mListViewLangs = (ListView) view.findViewById(R.id.langsList);
+        mListViewLangs.setOnItemClickListener(this);
+        populateList();
         return  view;
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        ListView langsList = (ListView) getView().findViewById(R.id.langsList);
-        SparseBooleanArray checkedItems = langsList.getCheckedItemPositions();
-        Log.d(TAG, String.valueOf(checkedItems));
-        String selectedLang = new ArrayList<>(mLanguageLocalisation.getLangs().keySet()).get(position);
+        String selectedLang = null;
+        try {
+            Cursor c = (Cursor) parent.getAdapter().getItem(position);
+            selectedLang = c.getString(c.getColumnIndex(DBContract.Languages.CODE));
+            Log.d(TAG, selectedLang);
+        }catch (Exception e){
+            Log.d(TAG, "" + e.getMessage());
+        }
         mListener.changeLanguage(mTargetView, selectedLang);
+    }
+
+    private void populateList(){
+        String locale = Locale.getDefault().getLanguage();
+        mDBProvider.getLanguages(locale, new DBProvider.ResultCallback<Cursor>() {
+            @Override
+            public void onFinished(Cursor result) {
+                CursorAdapter adapter = (CursorAdapter) mListViewLangs.getAdapter();
+                if (adapter == null){
+                    mListViewLangs.setAdapter(new LanguagesAdapter(getContext(), result, 1, mCurrentLangCode));
+                }else{
+                    adapter.changeCursor(result);
+                }
+            }
+        });
     }
 }
