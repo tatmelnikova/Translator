@@ -70,6 +70,22 @@ public class DBProvider {
             }
         });
     }
+
+    public void getLanguages(final String locale, final ResultCallback<Cursor> callback){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final Cursor c = mDBBackend.getLanguages(locale);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onFinished(c);
+                    }
+                });
+            }
+        });
+    }
+
     public void insertHistoryItem(final String text, final TranslateResult translateResult) {
         mExecutor.execute(new Runnable() {
             @Override

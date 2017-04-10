@@ -89,18 +89,40 @@ public class DBBackend implements DBContract {
      */
     Cursor getFav(String searchText){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        String[] columns = new String[] { History.ID , History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO, History.FAV_ID};
-        String orderBy = History.ID + " DESC";
-        String where = null; String[] args = null;
-        if (searchText != null) {
-            where = "(" + History.TEXT + " like ? OR " + History.RESULT + "  like ? ) AND " + History.FAV_ID + " IS NOT NULL";
-            args = new String[]{"%".concat(searchText).concat("%")};
-        }else{
-            where = History.FAV_ID + " IS NOT NULL";
+        Cursor c = null;
+        try {
+            String[] columns = new String[]{History.ID, History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO, History.FAV_ID};
+            String orderBy = History.ID + " DESC";
+            String where = null;
+            String[] args = null;
+            if (searchText != null) {
+                where = "(" + History.TEXT + " like ? OR " + History.RESULT + "  like ? ) AND " + History.FAV_ID + " IS NOT NULL";
+                args = new String[]{"%".concat(searchText).concat("%")};
+            } else {
+                where = History.FAV_ID + " IS NOT NULL";
+            }
+            c = db.query(HISTORY_WITH_FAV, columns, where, args, null, null, orderBy);
+            if (c != null) {
+                c.moveToFirst();
+            }
+        }catch (Exception e){
+            Log.d(TAG, "" + e.getMessage());
         }
-        Cursor c = db.query(HISTORY_WITH_FAV, columns, where, args, null, null, orderBy);
-        if (c != null) {
-            c.moveToFirst();
+        return c;
+    }
+
+    Cursor getLanguages(String locale){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        Cursor c = null;
+        try{
+            String[] columns = new String[]{Languages.ID, Languages.CODE, Languages.TITLE};
+            String orderBy = Languages.TITLE +" ASC";
+            String where = Languages.LOCALE +" = ?";
+            String args[] = new String[]{locale};
+            c = db.query(LANGUAGES, columns, where, args, null, null, orderBy);
+            if (c != null) c.moveToFirst();
+        }catch (Exception e){
+            Log.d(TAG, "" + e.getMessage());
         }
         return c;
     }
@@ -113,9 +135,6 @@ public class DBBackend implements DBContract {
      * @return true, если вставка прошла успешно
      */
     public boolean insertHistoryItem(String text, String result, String from, String to){
-        /*
-        * @todo: проверка на существование записи
-        * */
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         boolean inserted = false;
         try {
