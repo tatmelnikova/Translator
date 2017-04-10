@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ft.show(translateFragment);
         }
         ft.commit();
-
-
     }
 
     private void showLangsView(Integer viewID, String selectedLang){
@@ -79,11 +77,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.langTo:
                 showLangsView(R.id.langTo, mLangTo);
                 break;
+            case R.id.swapLang:
+                swapTranslateDirections();
             default:
                 break;
         }
     }
 
+    private void swapTranslateDirections(){
+        String tmp = mLangFrom;
+        mLangFrom = mLangTo;
+        mLangTo = tmp;
+        showTranslateFragment();
+    }
     @Override
     public void changeLanguage(Integer which, String code) {
         if (which.equals(R.id.langFrom)){

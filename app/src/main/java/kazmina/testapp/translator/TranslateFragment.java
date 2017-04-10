@@ -29,7 +29,7 @@ import retrofit2.Response;
  * фрагмент основного окна перевода
  */
 
-public class TranslateFragment extends Fragment implements View.OnClickListener, LanguagesHolder{
+public class TranslateFragment extends Fragment implements LanguagesHolder{
     private TranslateWatcher mTranslateWatcher;
     private List<TranslateResultHandler> mResultHandlers;
     private String TAG = "TranslateFragment";
@@ -109,12 +109,7 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         setWatcher();
     }
 
-    private void swapTranslateDirections(){
-        String tmp = mLangFrom;
-        mLangFrom = mLangTo;
-        mLangTo = tmp;
-        setupCurrentTranslateDirection();
-    }
+
 
     @Override
     public void onPause() {
@@ -151,16 +146,5 @@ public class TranslateFragment extends Fragment implements View.OnClickListener,
         mLangFrom = langFrom;
         mLangTo = langTo;
         setupCurrentTranslateDirection();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.swapLang:
-                swapTranslateDirections();
-                break;
-            default:
-                break;
-        }
     }
 }
