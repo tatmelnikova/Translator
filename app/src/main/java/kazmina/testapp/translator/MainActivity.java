@@ -1,37 +1,29 @@
 package kazmina.testapp.translator;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import kazmina.testapp.translator.interfaces.SaveResultAction;
-import kazmina.testapp.translator.interfaces.ShowResultAction;
-import kazmina.testapp.translator.interfaces.TranslateResultHandler;
+import kazmina.testapp.translator.interfaces.LanguageListener;
+import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.navigation.BottomNavigationListener;
-import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, LanguagesHolder, LanguageListener {
     private final String TAG = "MainActivity";
-    private TranslateWatcher mTranslateWatcher;
-    private List<TranslateResultHandler> mResultHandlers;
+
+    private final String TRANSLATE_FRAGMENT_TAG = "TRANSLATE_FRAGMENT_TAG";
+    private final String CHANGE_LANG_FRAGMENT_TAG = "CHANGE_LANG_FRAGMENT_TAG";
+
+    private String mLangFrom = DEFAULT_LANG_FROM;
+    private String mLangTo = DEFAULT_LANG_TO;
+
     private BottomNavigationListener mBottomNavigationListener = new BottomNavigationListener(this);
-    private SaveResultAction mSaveResultAction;
-    private EditText mTranslateText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,123 +31,67 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
-
-
-        mSaveResultAction = new SaveResultAction(this);
-        mTranslateText = (EditText) findViewById(R.id.editTextInput);
-        mTranslateText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                mSaveResultAction.setSaveImmediate(!hasFocus);
-            }
-        });
-
-        YandexTranslateApi api = TranslatorApplication.getApi();
-        String langID = Locale.getDefault().getLanguage();
-        Log.d(TAG, langID);
-        api.getLanguages(langID).enqueue(new Callback<LanguageLocalisation>() {
-            @Override
-            public void onResponse(Call<LanguageLocalisation> call, Response<LanguageLocalisation> response) {
-                //Данные успешно пришли, но надо проверить response.body() на null
-                if (response.body() == null){
-                    Log.d(TAG, "body is null");
-                }else{
-                    TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
-                    app.setLanguageLocalisation(response.body());
-                    setupCurrentTranslateDirection();
-                }
-            }
-            @Override
-            public void onFailure(Call<LanguageLocalisation> call, Throwable t) {
-                //Произошла ошибка
-                Log.d(TAG, "api query failure");
-                Log.d(TAG, t.getMessage());
-                t.printStackTrace();
-            }
-        });
-
+        showTranslateFragment();
     }
 
-    /**
-     * привязывает слушатель к полю ввода текста для перевода
-     */
-    private void setWatcher(){
-        TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
-        mTranslateText.removeTextChangedListener(mTranslateWatcher);
-        mTranslateWatcher = new TranslateWatcher( app.getLangFrom(), app.getLangTo(), mResultHandlers);
-        mTranslateText.addTextChangedListener(mTranslateWatcher);
+    private void showTranslateFragment(){
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment changeLangFragment = fm.findFragmentByTag(CHANGE_LANG_FRAGMENT_TAG);
+        if (changeLangFragment != null) ft.remove(changeLangFragment);
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setupCurrentTranslateDirection();
-        TextView resultView = (TextView)findViewById(R.id.textViewResult);
-        ShowResultAction showResultAction = new ShowResultAction(resultView);
-
-        mResultHandlers = new ArrayList<>();
-        mResultHandlers.add(showResultAction);
-        mResultHandlers.add(mSaveResultAction);
-        setWatcher();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mSaveResultAction.setSaveImmediate(true);
-        mResultHandlers = null;
-    }
-
-    private void setupCurrentTranslateDirection(){
-        TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
-        String langFromID = app.getLangFrom();
-        String langToID = app.getLangTo();
-        LanguageLocalisation languageLocalisation = app.getLanguageLocalisation();
-        if (languageLocalisation != null) {
-            if (langFromID != null) {
-                Button langFromButton = (Button) findViewById(R.id.langFrom);
-                langFromButton.setText(languageLocalisation.getLangs().get(langFromID));
-            }
-
-            if (langToID != null) {
-                Button langToButton = (Button) findViewById(R.id.langTo);
-                langToButton.setText(languageLocalisation.getLangs().get(langToID));
-            }
+        Fragment translateFragment = getSupportFragmentManager().findFragmentByTag(TRANSLATE_FRAGMENT_TAG);
+        if (translateFragment == null) {
+            Bundle params = new Bundle();
+            params.putString(LANG_FROM_VALUE, DEFAULT_LANG_FROM);
+            params.putString(LANG_TO_VALUE, DEFAULT_LANG_TO);
+            translateFragment = new TranslateFragment();
+            translateFragment.setArguments(params);
+            ft.add(R.id.fragmentContainer, translateFragment, TRANSLATE_FRAGMENT_TAG);
+        }else{
+            ((TranslateFragment)translateFragment).updateLangs(mLangFrom, mLangTo);
+            ft.show(translateFragment);
         }
-        setWatcher();
-    }
-    private void showLangsView(Integer viewID){
-        String langID = Locale.getDefault().getLanguage();
-        Intent intent = new Intent(this, ChangeLangActivity.class);
-        intent.putExtra("langID", langID);
-        intent.putExtra("viewFromID", viewID);
-        intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
+        ft.commit();
+
 
     }
 
-    private void swapTranslateDirections(){
-        TranslatorApplication app = ((TranslatorApplication) getApplicationContext());
-        String tmp = app.getLangTo();
-        app.setLangTo(app.getLangFrom());
-        app.setLangFrom(tmp);
-        setupCurrentTranslateDirection();
+    private void showLangsView(Integer viewID, String selectedLang){
+        Bundle params = new Bundle();
+        params.putInt(TARGET_VIEW, viewID);
+        params.putString(SELECTED_LANG_VALUE, selectedLang);
+        ChangeLanguageFragment changeLanguageFragment = new ChangeLanguageFragment();
+        changeLanguageFragment.setArguments(params);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.hide(fm.findFragmentByTag(TRANSLATE_FRAGMENT_TAG));
+        ft.add(R.id.fragmentContainer, changeLanguageFragment, CHANGE_LANG_FRAGMENT_TAG);
+        ft.commit();
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.langFrom:
-                showLangsView(R.id.langFrom);
+                showLangsView(R.id.langFrom, mLangFrom);
                 break;
             case R.id.langTo:
-                showLangsView(R.id.langTo);
-                break;
-            case R.id.swapLang:
-                swapTranslateDirections();
+                showLangsView(R.id.langTo, mLangTo);
                 break;
             default:
                 break;
         }
+    }
+
+    @Override
+    public void changeLanguage(Integer which, String code) {
+        if (which.equals(R.id.langFrom)){
+            mLangFrom = code;
+        }
+        if (which.equals(R.id.langTo)){
+            mLangTo = code;
+        }
+        showTranslateFragment();
     }
 }
