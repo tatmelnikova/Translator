@@ -32,5 +32,6 @@ public interface DBContract {
         String ID = "_id";
         String CODE = "code";
         String TITLE = "title";
+        String LOCALE = "locale";
     }
 }

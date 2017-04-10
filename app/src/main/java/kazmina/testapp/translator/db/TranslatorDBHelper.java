@@ -80,7 +80,8 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
                 "CREATE TABLE " + LANGUAGES + "(" +
                     Languages.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         Languages.CODE + " STRING NOT NULL, " +
-                        Languages.TITLE + " STRING NOT NULL " +
+                        Languages.TITLE + " STRING NOT NULL, " +
+                        Languages.LOCALE + " STRING NOT NULL" +
         ")";
         db.execSQL(langsSql);
         loadInterfaceLanguages();
@@ -106,13 +107,14 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
     private void loadLanguages() throws IOException {
         final Resources resources = mHelperContext.getResources();
         InputStream inputStream = resources.openRawResource(R.raw.languages_localisation);
+        String baseLocale = "ru";
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         try {
             Gson gson = new Gson();
             LanguageLocalisation localisation = gson.fromJson(reader, LanguageLocalisation.class);
             LinkedHashMap<String, String> langsMap = localisation.getLangs();
             for (Map.Entry<String, String> language : langsMap.entrySet()){
-                long insertId = addLanguage(language.getKey(), language.getValue());
+                long insertId = addLanguage(language.getKey(), language.getValue(), baseLocale);
                 Log.d(TAG, language.getKey() + " " + language.getValue());
                 if (insertId < 0) {
                     Log.e(TAG, "unable to add language: " + language.getKey());
@@ -123,10 +125,11 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
         }
     }
 
-    private long addLanguage(String code, String title) {
+    private long addLanguage(String code, String title, String locale) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(Languages.CODE, code);
         initialValues.put(Languages.TITLE, title);
+        initialValues.put(Languages.LOCALE, locale);
         return mSQLiteDatabase.insert(LANGUAGES, null, initialValues);
     }
 }
