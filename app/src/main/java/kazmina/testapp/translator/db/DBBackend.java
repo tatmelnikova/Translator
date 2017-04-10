@@ -59,6 +59,7 @@ public class DBBackend implements DBContract {
         }finally {
             db.endTransaction();
         }
+        //showLangs();
         return c;
     }
 
@@ -180,6 +181,24 @@ public class DBBackend implements DBContract {
         String sql = "SeLECT * FROM " + HISTORY;
         Cursor cursor = db.rawQuery(sql, null);
         Log.d(TAG, "count=" + cursor.getCount());
+        while (cursor.moveToNext()) {
+            int i = 0;
+            while (i < cursor.getColumnCount()) {
+                Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
+                i++;
+            }
+
+        }
+        cursor.close();
+        db.endTransaction();
+    }
+
+    public void showLangs(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.beginTransaction();
+        String sql = "SeLECT * FROM " + LANGUAGES;
+        Cursor cursor = db.rawQuery(sql, null);
+        Log.d(TAG, "langs count=" + cursor.getCount());
         while (cursor.moveToNext()) {
             int i = 0;
             while (i < cursor.getColumnCount()) {
