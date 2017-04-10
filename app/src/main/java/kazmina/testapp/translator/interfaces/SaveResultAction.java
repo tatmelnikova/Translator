@@ -38,6 +38,8 @@ public class SaveResultAction implements TranslateResultHandler {
      */
     public void setSaveImmediate(boolean immediate){
         mSaveImmediate = immediate;
+        //после установки флага пробуем сохранить результат перевода, т.к. он мог уже прийти
+        saveHistoryItem();
     }
 
     public void saveHistoryItem(){
