@@ -4,7 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.text.format.Time;
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
@@ -221,7 +228,7 @@ public class DBBackend implements DBContract {
         while (cursor.moveToNext()) {
             int i = 0;
             while (i < cursor.getColumnCount()) {
-                Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
+                //Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
                 i++;
             }
 
@@ -254,6 +261,69 @@ public class DBBackend implements DBContract {
         db.execSQL("delete from "+ FAVORITES);
         db.setTransactionSuccessful();
         db.endTransaction();
+    }
+
+    public Cursor updateLanguagesList(String locale, HashMap<String, String> languagesMap){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        Cursor c = null;
+        showLangs();
+        Time now = new Time(); now.setToNow();
+        Log.d(TAG, "update languages from api " + String.valueOf(now.toMillis(true)));
+        try{
+
+            List<String> langCodes = new ArrayList<>();
+            for(String langCode : languagesMap.keySet()){
+                langCodes.add(langCode);
+            }
+            String codes = "\"" + TextUtils.join("\",\"", langCodes) + "\"";
+            Log.d(TAG, codes);
+            String[] args = new String[]{locale, codes};
+            String where = Languages.LOCALE +" =  \""+ locale+ "\"  AND CODE NOT IN ( "+ codes +" )";
+            db.delete(LANGUAGES, where, null);
+
+            showLangs();
+            /*
+"af","am","ar","az","ba","be","bg","bn","bs","ca","ceb","cs","cy","da","de","el","en","eo","es","et","eu","fa","fi","fr","ga","gd","gl","gu","he","hi","hr","ht","hu","hy","id","is","it","ja","jv","ka","kk","km","kn","ko","ky","la","lb","lo","lt","lv","mg","mhr","mi","mk","ml","mn","mr","mrj","ms","mt","my","ne","nl","no","pa","pap","pl","pt","ro","ru","si","sk","sl","sq","sr","su","sv","sw","ta","te","tg","th","tl","tr","tt","udm","uk","ur","uz","vi","xh","yi","zh"
+
+
+            String[] columns = new String[]{Languages.ID, Languages.CODE, Languages.TITLE};
+            String orderBy = Languages.CODE +" ASC";
+
+            Cursor c = db.query(LANGUAGES, columns, where, args, null, null, orderBy);
+            */
+        }catch (Exception e){
+
+        }finally {
+            addLanguages(locale, languagesMap);
+            showLangs();
+        }
+
+        return c;
+    }
+
+    public void addLanguages(String locale, HashMap<String, String> languagesMap){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.beginTransaction();
+        try{
+            for(Map.Entry<String, String> langEntry : languagesMap.entrySet()) {
+                ContentValues values = new ContentValues();
+                values.put(Languages.CODE, langEntry.getKey());
+                values.put(Languages.TITLE, langEntry.getValue());
+                values.put(Languages.LOCALE, locale);
+                long insertId = db.insertWithOnConflict(LANGUAGES, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+                if (insertId >= 0) {
+                    Log.d(TAG, "added " + values.toString());
+                }else{
+                    Log.d(TAG, "failed " + values.toString());
+                }
+            }
+            db.setTransactionSuccessful();
+        }catch (Exception e){
+            Log.d(TAG, "" + e.getMessage());
+        }finally {
+            db.endTransaction();
+        }
+
     }
     /**
      * класс для проверки валидности результата перевода

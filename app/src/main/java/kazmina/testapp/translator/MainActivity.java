@@ -11,6 +11,7 @@ import android.view.View;
 
 import kazmina.testapp.translator.interfaces.LanguageListener;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
+import kazmina.testapp.translator.interfaces.LanguagesUpdater;
 import kazmina.testapp.translator.navigation.BottomNavigationListener;
 
 
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String mLangFrom = DEFAULT_LANG_FROM;
     private String mLangTo = DEFAULT_LANG_TO;
 
+    private LanguagesUpdater mLanguagesUpdater = new LangsUpdater();
+
     private BottomNavigationListener mBottomNavigationListener = new BottomNavigationListener(this);
 
     @Override
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
+        mLanguagesUpdater.update(this);
         showTranslateFragment();
     }
 

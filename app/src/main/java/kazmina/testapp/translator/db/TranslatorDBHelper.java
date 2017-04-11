@@ -6,12 +6,14 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.text.format.Time;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -81,10 +83,11 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
                     Languages.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         Languages.CODE + " STRING NOT NULL, " +
                         Languages.TITLE + " STRING NOT NULL, " +
-                        Languages.LOCALE + " STRING NOT NULL" +
+                        Languages.LOCALE + " STRING NOT NULL, " +
+                        "CONSTRAINT " + Languages.UNIQUE_LOC +" UNIQUE ( " + Languages.LOCALE +", " + Languages.CODE + ")" +
         ")";
         db.execSQL(langsSql);
-        loadInterfaceLanguages();
+        loadLanguages();
     }
 
     @Override
@@ -92,7 +95,11 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
         db.execSQL("DROP TABLE " + HISTORY);
         onCreate(db);
     }
-    private void loadInterfaceLanguages() {
+
+    /*private void loadInterfaceLanguages() {
+
+
+
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -103,8 +110,14 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
             }
         }).start();
     }
+    */
 
-    private void loadLanguages() throws IOException {
+    private void loadLanguages() {
+        Calendar c = Calendar.getInstance();
+        Time now = new Time();
+        now.setToNow();
+
+        Log.d(TAG, "loadInterfaceLanguages " + String.valueOf(now.toMillis(true)));
         final Resources resources = mHelperContext.getResources();
         InputStream inputStream = resources.openRawResource(R.raw.languages_localisation);
         String baseLocale = "ru";
@@ -120,8 +133,13 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
                     Log.e(TAG, "unable to add language: " + language.getKey());
                 }
             }
-        } finally {
             reader.close();
+        }
+        catch (IOException e){
+            Log.d(TAG, "" + e.getMessage());
+        }finally {
+            Log.d(TAG, "loadLanguages finished");
+
         }
     }
 

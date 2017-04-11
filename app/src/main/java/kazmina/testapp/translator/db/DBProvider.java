@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.VisibleForTesting;
 
+import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +87,20 @@ public class DBProvider {
         });
     }
 
+    public void updateLanguages(final String locale, final HashMap<String, String> languagesMap, final ResultCallback<Cursor> callback){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final Cursor c = mDBBackend.updateLanguagesList(locale, languagesMap);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onFinished(c);
+                    }
+                });
+            }
+        });
+    }
     public void insertHistoryItem(final String text, final TranslateResult translateResult) {
         mExecutor.execute(new Runnable() {
             @Override

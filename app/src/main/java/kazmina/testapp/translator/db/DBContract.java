@@ -33,5 +33,6 @@ public interface DBContract {
         String CODE = "code";
         String TITLE = "title";
         String LOCALE = "locale";
+        String UNIQUE_LOC = "unique_loc";
     }
 }
