@@ -34,8 +34,6 @@ import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
  */
 
 public class ChangeLanguageFragment extends Fragment implements AdapterView.OnItemClickListener, LanguagesHolder {
-    private LanguageLocalisation mLanguageLocalisation;
-
     private String mCurrentLangCode;
     private String TAG = "ChangeLanguageFragment";
     private int mTargetView;
@@ -78,8 +76,6 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_change_lang, container, false);
-        TranslatorApplication app = ((TranslatorApplication) getContext().getApplicationContext());
-        mLanguageLocalisation = app.getLanguageLocalisation();
         mListViewLangs = (ListView) view.findViewById(R.id.langsList);
         mListViewLangs.setOnItemClickListener(this);
         populateList();
