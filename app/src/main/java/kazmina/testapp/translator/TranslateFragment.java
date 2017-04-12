@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.Locale;
 
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.interfaces.SaveResultAction;
+import kazmina.testapp.translator.interfaces.SetFavoritesAction;
 import kazmina.testapp.translator.interfaces.ShowResultAction;
 import kazmina.testapp.translator.interfaces.TranslateResultHandler;
 
@@ -89,12 +91,15 @@ public class TranslateFragment extends Fragment implements LanguagesHolder{
     public void onResume() {
         super.onResume();
         if (mView != null) {
-            TextView resultView = (TextView) mView.findViewById(R.id.textViewResult);
-            ShowResultAction showResultAction = new ShowResultAction(resultView);
+            ImageView favIconView = (ImageView) mView.findViewById(R.id.imageViewFav);
+            TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
+            ShowResultAction showResultAction = new ShowResultAction(resultTextView);
+            SetFavoritesAction setFavoritesAction = new SetFavoritesAction(getContext(), favIconView);
             mSaveResultAction = new SaveResultAction(getContext());
             mResultHandlers = new ArrayList<>();
             mResultHandlers.add(showResultAction);
             mResultHandlers.add(mSaveResultAction);
+            mResultHandlers.add(setFavoritesAction);
             setWatcher();
         }
     }

@@ -1,9 +1,14 @@
 package kazmina.testapp.translator.interfaces;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.support.v4.content.res.ResourcesCompat;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import kazmina.testapp.translator.R;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 /**
@@ -11,21 +16,23 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
  */
 
 public class ShowResultAction implements  TranslateResultHandler {
-    private Context mContext;
-    private TextView mResultView;
-
+    private TextView mResultText;
     public ShowResultAction(TextView resultView) {
         super();
-        mResultView = resultView;
+        mResultText = (TextView) resultView.findViewById(R.id.textViewResult);
     }
 
     @Override
     public boolean processResult(String text, TranslateResult translateResult) {
-        mResultView.setText("");
-        if (translateResult != null){
-            for (String textPart : translateResult.getText()){
-                mResultView.append(textPart);
+        if (text != null && text.length() > 0) {
+            mResultText.setText("");
+            if (translateResult != null) {
+                for (String textPart : translateResult.getText()) {
+                    mResultText.append(textPart);
+                }
             }
+        }else{
+            mResultText.setText("");
         }
         return true;
     }

@@ -61,32 +61,39 @@ class TranslateWatcher implements TextWatcher{
     @Override
     public void afterTextChanged(Editable s) {
         final String text = s.toString();
-
-        mTimer.cancel();
-        mTimer = new Timer();
-        mTimer.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        YandexTranslateApi api = TranslatorApplication.getApi();
-                        api.getTranslate(text, mTranslateDirection).enqueue(new Callback<TranslateResult>() {
-                            @Override
+        if (text.length() > 0) {
+            mTimer.cancel();
+            mTimer = new Timer();
+            mTimer.schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            YandexTranslateApi api = TranslatorApplication.getApi();
+                            api.getTranslate(text, mTranslateDirection).enqueue(new Callback<TranslateResult>() {
+                                @Override
                                 public void onResponse(Call<TranslateResult> call, Response<TranslateResult> response) {
-                                    if (response.body() != null){
-                                        for (TranslateResultHandler handler : mHandlerList){
+                                    if (response.body() != null) {
+                                        for (TranslateResultHandler handler : mHandlerList) {
                                             handler.processResult(text, response.body());
                                         }
                                     }
                                 }
 
-                            @Override
-                            public void onFailure(Call<TranslateResult> call, Throwable t) {
-                                Log.d(TAG, t.getMessage());
-                            }
-                        });
-                    }
-                },
-                mDelay
-        );
+                                @Override
+                                public void onFailure(Call<TranslateResult> call, Throwable t) {
+                                    Log.d(TAG, t.getMessage());
+                                }
+                            });
+                        }
+                    },
+                    mDelay
+            );
+        } else {
+            //если поле ввода было очищено, передадим обработчикам в качестве результата перевода null
+            mTimer.cancel();
+            for (TranslateResultHandler handler : mHandlerList) {
+                handler.processResult(text, null);
+            }
+        }
     }
 }

@@ -118,6 +118,31 @@ public class DBBackend implements DBContract {
         return c;
     }
 
+
+    Integer getFavoritesID(String text, String langFrom, String langTo){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        Integer inFav = null;
+        try {
+            String[] columns = new String[]{Favorites.ID};
+            String orderBy = Favorites.ID + " DESC";
+
+            String where = "(" + Favorites.TEXT + " = ? AND " + Favorites.DIRECTION_FROM + "  = ? ) AND " + Favorites.DIRECTION_TO+ " = ?";
+            String[] args = new String[]{text, langFrom, langTo};
+
+            Cursor c = db.query(FAVORITES, columns, where, args, null, null, orderBy);
+            if (c != null) {
+                if (c.getCount() > 0) {
+                    c.moveToFirst();
+                    inFav = c.getInt(c.getColumnIndex(Favorites.ID));
+                }
+                c.close();
+            }
+        }catch (Exception e){
+            Log.d(TAG, "" + e.getMessage());
+        }
+        return inFav;
+    }
+
     Cursor getLanguages(String locale){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         Cursor c = null;

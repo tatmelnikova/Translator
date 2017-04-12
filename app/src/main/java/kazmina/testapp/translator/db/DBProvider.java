@@ -130,6 +130,20 @@ public class DBProvider {
             }
         });
     }
+    public void getFavoritesId(final String text, final String langFrom, final String langTo, final ResultCallback<Integer> callback){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final Integer favId = mDBBackend.getFavoritesID(text, langFrom, langTo);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onFinished(favId);
+                    }
+                });
+            }
+        });
+    }
 
     public void checkResultValidity(final String text, final TranslateResult translateResult, final ResultCallback<TranslateResult> callback){
         mExecutor.execute(new Runnable() {

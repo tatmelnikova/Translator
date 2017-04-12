@@ -56,16 +56,36 @@
             android:layout_gravity="center_horizontal"
             android:ems="10"
             android:inputType="textMultiLine"/>
-
-        <TextView
-            android:id="@+id/textViewResult"
+        <RelativeLayout
+            android:id="@+id/resultWrapper"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_below="@+id/editTextInput"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="start"
+            android:layout_height="0dp">
+            <TextView
+                android:id="@+id/textViewResult"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
 
-            android:scrollbars="vertical"
-            android:textAlignment="viewStart"
-            android:layout_below="@+id/editTextInput"/>
+
+                android:layout_gravity="start"
+                android:scrollbars="vertical"
+                android:textAlignment="viewStart"
+
+                android:layout_toLeftOf="@+id/imageViewFav"
+                android:layout_toStartOf="@+id/imageViewFav"/>
+            <ImageView
+                android:id="@+id/imageViewFav"
+                android:layout_width="@dimen/fav_icon_width"
+                android:layout_height="@dimen/fav_icon_height"
+                android:padding="@dimen/fav_icon_padding"
+                android:visibility="invisible"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/fav_icon_title"
+                android:src="@drawable/ic_favorite_white_24dp"/>
+        </RelativeLayout>
+
     </RelativeLayout>
 </LinearLayout>
