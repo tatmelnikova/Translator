@@ -24,6 +24,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String mLangFrom = DEFAULT_LANG_FROM;
     private String mLangTo = DEFAULT_LANG_TO;
 
+    private String mLangFromTitle = DEFAULT_LANG_FROM_TITLE;
+    private String mLangToTitle = DEFAULT_LANG_TO_TITLE;
+
+
     private LanguagesUpdater mLanguagesUpdater = new LangsUpdater();
 
     private BottomNavigationListener mBottomNavigationListener = new BottomNavigationListener(this);
@@ -49,11 +53,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Bundle params = new Bundle();
             params.putString(LANG_FROM_VALUE, DEFAULT_LANG_FROM);
             params.putString(LANG_TO_VALUE, DEFAULT_LANG_TO);
+            params.putString(LANG_FROM_TITLE, DEFAULT_LANG_FROM_TITLE);
+            params.putString(LANG_TO_TITLE, DEFAULT_LANG_TO_TITLE);
             translateFragment = new TranslateFragment();
             translateFragment.setArguments(params);
             ft.add(R.id.fragmentContainer, translateFragment, TRANSLATE_FRAGMENT_TAG);
         }else{
-            ((TranslateFragment)translateFragment).updateLangs(mLangFrom, mLangTo);
+            ((TranslateFragment)translateFragment).updateLangs(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
             ft.show(translateFragment);
         }
         ft.commit();
@@ -92,15 +98,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String tmp = mLangFrom;
         mLangFrom = mLangTo;
         mLangTo = tmp;
+        tmp = mLangFromTitle;
+        mLangFromTitle = mLangToTitle;
+        mLangToTitle = tmp;
         showTranslateFragment();
     }
     @Override
-    public void changeLanguage(Integer which, String code) {
+    public void changeLanguage(Integer which, String code, String title) {
         if (which.equals(R.id.langFrom)){
             mLangFrom = code;
+            mLangFromTitle = title;
         }
         if (which.equals(R.id.langTo)){
             mLangTo = code;
+            mLangToTitle = title;
         }
         showTranslateFragment();
     }

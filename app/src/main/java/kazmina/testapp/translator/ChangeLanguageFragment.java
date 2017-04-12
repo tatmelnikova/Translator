@@ -84,15 +84,16 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String selectedLang = null;
+        String selectedLangValue = null;
+        String selectedLangTitle = null;
         try {
             Cursor c = (Cursor) parent.getAdapter().getItem(position);
-            selectedLang = c.getString(c.getColumnIndex(DBContract.Languages.CODE));
-            Log.d(TAG, selectedLang);
+            selectedLangTitle =  c.getString(c.getColumnIndex(DBContract.Languages.TITLE));
+            selectedLangValue = c.getString(c.getColumnIndex(DBContract.Languages.CODE));
         }catch (Exception e){
             Log.d(TAG, "" + e.getMessage());
         }
-        mListener.changeLanguage(mTargetView, selectedLang);
+        mListener.changeLanguage(mTargetView, selectedLangValue, selectedLangTitle);
     }
 
     private void populateList(){

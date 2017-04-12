@@ -263,45 +263,30 @@ public class DBBackend implements DBContract {
         db.endTransaction();
     }
 
-    public Cursor updateLanguagesList(String locale, HashMap<String, String> languagesMap){
+    Cursor updateLanguagesList(String locale, HashMap<String, String> languagesMap){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         Cursor c = null;
-        showLangs();
-        Time now = new Time(); now.setToNow();
-        Log.d(TAG, "update languages from api " + String.valueOf(now.toMillis(true)));
         try{
-
+            db.beginTransaction();
             List<String> langCodes = new ArrayList<>();
             for(String langCode : languagesMap.keySet()){
                 langCodes.add(langCode);
             }
             String codes = "\"" + TextUtils.join("\",\"", langCodes) + "\"";
             Log.d(TAG, codes);
-            String[] args = new String[]{locale, codes};
             String where = Languages.LOCALE +" =  \""+ locale+ "\"  AND CODE NOT IN ( "+ codes +" )";
             db.delete(LANGUAGES, where, null);
-
-            showLangs();
-            /*
-"af","am","ar","az","ba","be","bg","bn","bs","ca","ceb","cs","cy","da","de","el","en","eo","es","et","eu","fa","fi","fr","ga","gd","gl","gu","he","hi","hr","ht","hu","hy","id","is","it","ja","jv","ka","kk","km","kn","ko","ky","la","lb","lo","lt","lv","mg","mhr","mi","mk","ml","mn","mr","mrj","ms","mt","my","ne","nl","no","pa","pap","pl","pt","ro","ru","si","sk","sl","sq","sr","su","sv","sw","ta","te","tg","th","tl","tr","tt","udm","uk","ur","uz","vi","xh","yi","zh"
-
-
-            String[] columns = new String[]{Languages.ID, Languages.CODE, Languages.TITLE};
-            String orderBy = Languages.CODE +" ASC";
-
-            Cursor c = db.query(LANGUAGES, columns, where, args, null, null, orderBy);
-            */
+            db.setTransactionSuccessful();
         }catch (Exception e){
-
+            Log.d(TAG, "" + e.getMessage());
         }finally {
-            addLanguages(locale, languagesMap);
-            showLangs();
+            db.endTransaction();
         }
-
+        addLanguages(locale, languagesMap);
         return c;
     }
 
-    public void addLanguages(String locale, HashMap<String, String> languagesMap){
+    void addLanguages(String locale, HashMap<String, String> languagesMap){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.beginTransaction();
         try{
