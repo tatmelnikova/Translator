@@ -7,7 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import kazmina.testapp.translator.HistoryActivity;
+
 import kazmina.testapp.translator.MainActivity;
 import kazmina.testapp.translator.R;
 
@@ -32,8 +32,8 @@ public class BottomNavigationListener implements BottomNavigationView.OnNavigati
                 return true;
             case R.id.navigation_favorites:
 
-                 intent = new Intent(mContext.getBaseContext(), HistoryActivity.class);
-                mContext.startActivity(intent);
+
+
                 return true;
             case R.id.navigation_settings:
 

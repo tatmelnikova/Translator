@@ -1,50 +1,33 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.retrofitModels;
 
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import kazmina.testapp.translator.navigation.BottomNavigationListener;
+import kazmina.testapp.translator.FavoritesListFragment;
+import kazmina.testapp.translator.HistoryListFragment;
+import kazmina.testapp.translator.R;
 
 /**
- * история переводов
+ * @todo: header
  */
 
-public class HistoryActivity extends AppCompatActivity implements View.OnClickListener{
-    private final String TAG = "HistoryActivity";
-
+public class HistoryFragment extends Fragment implements View.OnClickListener{
     TabLayout mTabLayout;
     ViewPagerAdapter mViewPagerAdapter;
     ViewPager mViewPager;
-
-    private BottomNavigationListener mBottomNavigationListener = new BottomNavigationListener(this);
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
-
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setSelectedItemId(R.id.navigation_favorites);
-        navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
-
-        mTabLayout = (TabLayout) findViewById(R.id.tabs);
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
-        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mViewPagerAdapter.addFragment(new HistoryListFragment(), getString(R.string.tab_history));
-        mViewPagerAdapter.addFragment(new FavoritesListFragment(), getString(R.string.tab_favorites));
-        mViewPager.setAdapter(mViewPagerAdapter);
-        mTabLayout.setupWithViewPager(mViewPager);
-
-    }
+    final String TAG = "HistoryFragment";
 
     @Override
     public void onClick(View v) {
@@ -57,11 +40,23 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
                 break;
         }
     }
-
     public void deleteHistoryList(){
         Log.d(TAG, "currentItem=" +mViewPager.getCurrentItem());
         HistoryListFragment fragment = mViewPagerAdapter.getItem(mViewPager.getCurrentItem());
         fragment.clearList();
+    }
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_history, container, false);
+        mTabLayout = (TabLayout) view.findViewById(R.id.tabs);
+        mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        mViewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
+        mViewPagerAdapter.addFragment(new HistoryListFragment(), getString(R.string.tab_history));
+        mViewPagerAdapter.addFragment(new FavoritesListFragment(), getString(R.string.tab_favorites));
+        mViewPager.setAdapter(mViewPagerAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
+        return view;
     }
 
     private class ViewPagerAdapter extends FragmentPagerAdapter {

@@ -49,14 +49,6 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         View view = inflater.inflate(R.layout.fragment_translate, container, false);
         mView = view;
         mEditTextTranslate = (EditText) view.findViewById(R.id.editTextInput);
-        //при потере фокуса полем ввода текста установить флаг немедленного сохранения результата перевода в истории
-        mEditTextTranslate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                mSaveResultAction.setSaveImmediate(!hasFocus);
-            }
-        });
-
         return view;
     }
 
@@ -64,20 +56,20 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     /**
      * привязывает слушатель к полю ввода текста для перевода
      */
-    private void setWatcher(@NonNull String langFrom, @NonNull String langTo){
+    private void setWatcher(){
         if (mEditTextTranslate != null) {
             mEditTextTranslate.removeTextChangedListener(mTranslateWatcher);
-            mTranslateWatcher = new TranslateWatcher(langFrom, langTo, this);
+            mTranslateWatcher = new TranslateWatcher(mLangFrom, mLangTo, this);
             mEditTextTranslate.addTextChangedListener(mTranslateWatcher);
         }
     }
 
-    private void showTranslateDirection(@NonNull String langFromTitle, @NonNull String langToTitle){
+    private void showTranslateDirection(){
         if (mView != null) {
             Button langFromButton = (Button) mView.findViewById(R.id.langFrom);
-            langFromButton.setText(langFromTitle);
+            langFromButton.setText(mLangFromTitle);
             Button langToButton = (Button) mView.findViewById(R.id.langTo);
-            langToButton.setText(langToTitle);
+            langToButton.setText(mLangToTitle);
         }
     }
 
@@ -102,12 +94,32 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         mResultHandlers = null;
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        setWatcher(mLangFrom, mLangTo);
-        showTranslateDirection(mLangFromTitle, mLangToTitle);
+        setWatcher();
+        showTranslateDirection();
+        ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
+        TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
+        if (mResultHandlers == null) {
+            mShowResultAction = new ShowResultAction(resultTextView);
+            ListenFavoritesAction listenFavoritesAction = new ListenFavoritesAction(getContext(), imageButton);
+            mSaveResultAction = new SaveResultAction(getContext());
+            mResultHandlers = new ArrayList<>();
+            mResultHandlers.add(mShowResultAction);
+            mResultHandlers.add(mSaveResultAction);
+            mResultHandlers.add(listenFavoritesAction);
+
+        }
+        //при потере фокуса полем ввода текста установить флаг немедленного сохранения результата перевода в истории
+        mEditTextTranslate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                mSaveResultAction.setSaveImmediate(!hasFocus);
+            }
+        });
         if (mTranslateResult != null) {
             for (TranslateResultHandler handler : mResultHandlers) {
                 handler.processResult(mTranslateText, mTranslateResult);
@@ -126,21 +138,17 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
             updateLangs(params);
         }
 
-        if (mView != null) {
-            ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
-            TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
-            if (mResultHandlers == null) {
-                mShowResultAction = new ShowResultAction(resultTextView);
-                ListenFavoritesAction listenFavoritesAction = new ListenFavoritesAction(getContext(), imageButton);
-                mSaveResultAction = new SaveResultAction(getContext());
-                mResultHandlers = new ArrayList<>();
-                mResultHandlers.add(mShowResultAction);
-                mResultHandlers.add(mSaveResultAction);
-                mResultHandlers.add(listenFavoritesAction);
-            }
-        }
     }
 
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden){
+            showTranslateDirection();
+            setWatcher();
+        }
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

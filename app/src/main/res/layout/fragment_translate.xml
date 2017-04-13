@@ -90,7 +90,9 @@
                 android:id="@+id/rotate"
                 android:onClick="onClick"
                 android:layout_width="48dp"
-                android:layout_height="48dp"/>
+                android:layout_height="48dp"
+                android:layout_below="@+id/imageViewFav"
+                android:layout_toEndOf="@+id/textViewResult"/>
         </RelativeLayout>
 
     </RelativeLayout>

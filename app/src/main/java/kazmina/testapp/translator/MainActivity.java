@@ -3,18 +3,22 @@ package kazmina.testapp.translator;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CheckableImageButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
+
+import java.util.List;
 
 import kazmina.testapp.translator.interfaces.LanguageListener;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.interfaces.LanguagesUpdater;
-import kazmina.testapp.translator.navigation.BottomNavigationListener;
+import kazmina.testapp.translator.retrofitModels.HistoryFragment;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, LanguagesHolder, LanguageListener {
@@ -22,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private final String TRANSLATE_FRAGMENT_TAG = "TRANSLATE_FRAGMENT_TAG";
     private final String CHANGE_LANG_FRAGMENT_TAG = "CHANGE_LANG_FRAGMENT_TAG";
+    private final String SHOW_HISTORY_FRAGMENT_TAG = "SHOW_HISTORY";
 
     private String mLangFrom = DEFAULT_LANG_FROM;
     private String mLangTo = DEFAULT_LANG_TO;
@@ -32,7 +37,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private LanguagesUpdater mLanguagesUpdater = new LangsUpdater();
 
-    private BottomNavigationListener mBottomNavigationListener = new BottomNavigationListener(this);
+    private BottomNavigationView.OnNavigationItemSelectedListener mBottomNavigationListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    showFragment(TRANSLATE_FRAGMENT_TAG);
+                    return true;
+                case R.id.navigation_favorites:
+                    showFragment(SHOW_HISTORY_FRAGMENT_TAG);
+                    return true;
+                case R.id.navigation_settings:
+
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,29 +63,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
         mLanguagesUpdater.update(this);
         restoreFromBundle(savedInstanceState);
-        showTranslateFragment();
+        showFragment(TRANSLATE_FRAGMENT_TAG);
     }
 
-    private void showTranslateFragment(){
+    private Fragment createTranslateFragment(){
+
+        Fragment translateFragment ;
+        Bundle params = new Bundle();
+        params.putString(LANG_FROM_VALUE, DEFAULT_LANG_FROM);
+        params.putString(LANG_TO_VALUE, DEFAULT_LANG_TO);
+        params.putString(LANG_FROM_TITLE, DEFAULT_LANG_FROM_TITLE);
+        params.putString(LANG_TO_TITLE, DEFAULT_LANG_TO_TITLE);
+        translateFragment = new TranslateFragment();
+        translateFragment.setArguments(params);
+
+       return translateFragment;
+    }
+
+    private Fragment createHistoryFragment(){
+        return new HistoryFragment();
+    }
+
+
+    private void showFragment(String activeFragmentTag){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        Fragment changeLangFragment = fm.findFragmentByTag(CHANGE_LANG_FRAGMENT_TAG);
-        if (changeLangFragment != null) ft.remove(changeLangFragment);
-
-        Fragment translateFragment = getSupportFragmentManager().findFragmentByTag(TRANSLATE_FRAGMENT_TAG);
-        if (translateFragment == null) {
-            Bundle params = new Bundle();
-            params.putString(LANG_FROM_VALUE, DEFAULT_LANG_FROM);
-            params.putString(LANG_TO_VALUE, DEFAULT_LANG_TO);
-            params.putString(LANG_FROM_TITLE, DEFAULT_LANG_FROM_TITLE);
-            params.putString(LANG_TO_TITLE, DEFAULT_LANG_TO_TITLE);
-            translateFragment = new TranslateFragment();
-            translateFragment.setArguments(params);
-            ft.add(R.id.fragmentContainer, translateFragment, TRANSLATE_FRAGMENT_TAG);
+        List<Fragment> allFragments = getSupportFragmentManager().getFragments();
+        if (allFragments != null && allFragments.size() > 0) {
+            for (Fragment fragment : allFragments) {
+                if (fragment.isVisible() && !(activeFragmentTag.equals(fragment.getTag()))) {
+                    ft.hide(fragment);
+                }
+            }
+        }
+        Fragment active = fm.findFragmentByTag(activeFragmentTag);
+        if (active == null){
+            switch (activeFragmentTag){
+                case SHOW_HISTORY_FRAGMENT_TAG:
+                    active = createHistoryFragment();
+                    break;
+                case TRANSLATE_FRAGMENT_TAG:
+                    active = createTranslateFragment();
+                    break;
+                default:
+                    break;
+            }
+            //ft.add(R.id.fragmentContainer, active, activeFragmentTag);
         }else{
-            ft.show(translateFragment);
-            ((TranslateFragment)translateFragment).updateLangs(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
+            if (activeFragmentTag.equals(TRANSLATE_FRAGMENT_TAG)) ((TranslateFragment)active).updateLangs(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
+            //ft.replace(R.id.fragmentContainer, active, activeFragmentTag);
+            //ft.addToBackStack(null);
+            //ft.show(active);
+        }
 
+        if (active != null && active.isAdded()){
+            ft.show(active);
+        }else{
+            ft.add( R.id.fragmentContainer, active, activeFragmentTag);
         }
         ft.commit();
     }
@@ -115,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tmp = mLangFromTitle;
         mLangFromTitle = mLangToTitle;
         mLangToTitle = tmp;
-        showTranslateFragment();
+        showFragment(TRANSLATE_FRAGMENT_TAG);
     }
     @Override
     public void changeLanguage(Integer which, String code, String title) {
@@ -127,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mLangTo = code;
             mLangToTitle = title;
         }
-        showTranslateFragment();
+        showFragment(TRANSLATE_FRAGMENT_TAG);
     }
 
     @Override
