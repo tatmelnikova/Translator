@@ -111,6 +111,16 @@ public class DBProvider {
         });
     }
 
+
+    public void insertFavoritesItem(final String text, final String result, final String langFrom, final String langTo){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDBBackend.insertFavoritesItem(text, result, langFrom, langTo);
+                mDBNotificationManager.notifyListeners();
+            }
+        });
+    }
     public void copyHistoryItemToFavorites(final Integer itemId){
         mExecutor.execute(new Runnable() {
             @Override

@@ -1,5 +1,6 @@
 package kazmina.testapp.translator;
 
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -22,23 +23,33 @@ class TranslateWatcher implements TextWatcher{
     private Timer mTimer = new Timer();
     private final String TAG = "TranslateWatcher";
     private String mTranslateDirection;
+    private TranslateResult mTranslateResult = null;
+    private String mTranslateText = null;
     private List<TranslateResultHandler> mHandlerList;
 
     private final long mDelay = 1000;
     private final String mDelimeter = "-";
-
+    private TranslateResultHandler mTranslateResultHandler;
 
     /**
      * @param langFrom - идентификатор языка, с которого переводим
      * @param langTo - идентификатор языка, на который переводим
-     * @param handlerList - список обработчиков результата перевода
+     * @param handler - обработчик результата перевода
      */
-    TranslateWatcher(String langFrom, String langTo, List<TranslateResultHandler> handlerList) {
+    TranslateWatcher(@NonNull String langFrom, @NonNull String langTo, TranslateResultHandler handler) {
         super();
-        mHandlerList = handlerList;
+        mTranslateResultHandler = handler;
         mTranslateDirection = langFrom.concat(mDelimeter).concat(langTo);
     }
 
+
+    TranslateResult getTranslateResult(){
+        return mTranslateResult;
+    }
+
+    String getTranslateText(){
+        return mTranslateText;
+    }
     public void setTranslateDirection(String direction){
         mTranslateDirection = direction;
     }
@@ -73,9 +84,9 @@ class TranslateWatcher implements TextWatcher{
                                 @Override
                                 public void onResponse(Call<TranslateResult> call, Response<TranslateResult> response) {
                                     if (response.body() != null) {
-                                        for (TranslateResultHandler handler : mHandlerList) {
-                                            handler.processResult(text, response.body());
-                                        }
+                                        mTranslateResult = response.body();
+                                        mTranslateText = text;
+                                        mTranslateResultHandler.processResult(text, mTranslateResult);
                                     }
                                 }
 
@@ -91,9 +102,7 @@ class TranslateWatcher implements TextWatcher{
         } else {
             //если поле ввода было очищено, передадим обработчикам в качестве результата перевода null
             mTimer.cancel();
-            for (TranslateResultHandler handler : mHandlerList) {
-                handler.processResult(text, null);
-            }
+            mTranslateResultHandler.processResult(null, null);
         }
     }
 }

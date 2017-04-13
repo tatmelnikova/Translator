@@ -1,8 +1,10 @@
 package kazmina.testapp.translator;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CheckableImageButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
         mLanguagesUpdater.update(this);
+        restoreFromBundle(savedInstanceState);
         showTranslateFragment();
     }
 
@@ -59,8 +62,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             translateFragment.setArguments(params);
             ft.add(R.id.fragmentContainer, translateFragment, TRANSLATE_FRAGMENT_TAG);
         }else{
-            ((TranslateFragment)translateFragment).updateLangs(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
             ft.show(translateFragment);
+            ((TranslateFragment)translateFragment).updateLangs(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
+
         }
         ft.commit();
     }
@@ -89,6 +93,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.swapLang:
                 swapTranslateDirections();
+                break;
+            case R.id.rotate:
+                if (!"1".equals(v.getTag())) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    v.setTag("1");
+                }else{
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    v.setTag("0");
+                }
+                break;
             default:
                 break;
         }
@@ -114,5 +128,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mLangToTitle = title;
         }
         showTranslateFragment();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(LANG_FROM_VALUE, mLangFrom);
+        outState.putString(LANG_FROM_TITLE, mLangFromTitle);
+        outState.putString(LANG_TO_VALUE, mLangTo);
+        outState.putString(LANG_TO_TITLE, mLangToTitle);
+    }
+
+
+    private void restoreFromBundle(Bundle savedInstanceState){
+        if (savedInstanceState != null){
+            mLangFrom = savedInstanceState.getString(LANG_FROM_VALUE);
+            mLangFromTitle = savedInstanceState.getString(LANG_FROM_TITLE);
+            mLangTo = savedInstanceState.getString(LANG_TO_VALUE);
+            mLangToTitle = savedInstanceState.getString(LANG_TO_TITLE);
+        }
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        restoreFromBundle(savedInstanceState);
     }
 }

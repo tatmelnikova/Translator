@@ -19,4 +19,7 @@ public interface LanguagesHolder {
 
     String SELECTED_LANG_VALUE = "SELECTED_LANG_VALUE";
     String TARGET_VIEW = "TARGET_VIEW";
+
+    String TEXT = "TEXT";
+    String TRANSLATE_RESULT = "TRANSLATE_RESULT";
 }

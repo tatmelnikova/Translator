@@ -159,7 +159,7 @@ public class DBBackend implements DBContract {
         return c;
     }
     /**
-     * добавляет результат перевода в избранное
+     * добавляет результат перевода в историю
      * @param text - исходный текст
      * @param result - результат перевода
      * @param from - язык, с которого переводим
@@ -187,6 +187,34 @@ public class DBBackend implements DBContract {
         return inserted;
     }
 
+    /**
+     * добавляет результат перевода в избранное
+     * @param text - исходный текст
+     * @param result - результат перевода
+     * @param from - язык, с которого переводим
+     * @param to - язык, на который переводим
+     * @return true, если вставка прошла успешно
+     */
+    public boolean insertFavoritesItem(String text, String result, String from, String to){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        boolean inserted = false;
+        try {
+            db.beginTransaction();
+            ContentValues values = new ContentValues();
+            values.put(Favorites.TEXT, text);
+            values.put(Favorites.RESULT, result);
+            values.put(Favorites.DIRECTION_FROM, from);
+            values.put(Favorites.DIRECTION_TO, to);
+            db.insert(FAVORITES, null, values);
+            db.setTransactionSuccessful();
+            inserted = true;
+        } catch (Exception e){
+            inserted = false;
+        }finally {
+            db.endTransaction();
+        }
+        return inserted;
+    }
     /**
      * копирует запись из истории в избранное
      * @param itemID - идентификатор нужной записи
@@ -298,7 +326,7 @@ public class DBBackend implements DBContract {
                 langCodes.add(langCode);
             }
             String codes = "\"" + TextUtils.join("\",\"", langCodes) + "\"";
-            Log.d(TAG, codes);
+            //Log.d(TAG, codes);
             String where = Languages.LOCALE +" =  \""+ locale+ "\"  AND CODE NOT IN ( "+ codes +" )";
             db.delete(LANGUAGES, where, null);
             db.setTransactionSuccessful();
@@ -322,9 +350,9 @@ public class DBBackend implements DBContract {
                 values.put(Languages.LOCALE, locale);
                 long insertId = db.insertWithOnConflict(LANGUAGES, null, values, SQLiteDatabase.CONFLICT_IGNORE);
                 if (insertId >= 0) {
-                    Log.d(TAG, "added " + values.toString());
+                   // Log.d(TAG, "added " + values.toString());
                 }else{
-                    Log.d(TAG, "failed " + values.toString());
+                   // Log.d(TAG, "failed " + values.toString());
                 }
             }
             db.setTransactionSuccessful();
@@ -353,9 +381,9 @@ public class DBBackend implements DBContract {
                     || isEmpty(translateResult.getPlainText())
                 ){
                 result = false;
-                Log.d(TAG, "result is empty");
+                //Log.d(TAG, "result is empty");
             }else{
-                Log.d(TAG, "result is not empty");
+               // Log.d(TAG, "result is not empty");
             }
             return result;
         }

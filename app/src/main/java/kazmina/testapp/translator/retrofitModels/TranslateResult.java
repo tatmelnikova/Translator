@@ -1,10 +1,12 @@
 package kazmina.testapp.translator.retrofitModels;
 
+import java.io.Serializable;
+
 /**
  * класс для хранения результата перевода
  */
 
-public class TranslateResult {
+public class TranslateResult implements Serializable{
     public String getLang() {
         return lang;
     }

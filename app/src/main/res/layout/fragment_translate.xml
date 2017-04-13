@@ -79,12 +79,18 @@
                 android:layout_width="@dimen/fav_icon_width"
                 android:layout_height="@dimen/fav_icon_height"
                 android:padding="@dimen/fav_icon_padding"
+                android:onClick="onClick"
                 android:visibility="invisible"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/fav_icon_title"
                 android:src="@drawable/ic_favorite_white_24dp"/>
+            <Button
+                android:id="@+id/rotate"
+                android:onClick="onClick"
+                android:layout_width="48dp"
+                android:layout_height="48dp"/>
         </RelativeLayout>
 
     </RelativeLayout>
