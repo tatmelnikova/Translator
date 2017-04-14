@@ -35,10 +35,15 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
         mSQLiteDatabase = db;
-        /*db.execSQL("DROP TABLE IF EXISTS " + HISTORY );
+        /*
+        db.execSQL("DROP TABLE IF EXISTS " + HISTORY );
         db.execSQL("DROP TABLE IF EXISTS " + FAVORITES );
+        db.execSQL("DROP TABLE IF EXISTS " + LANGUAGES );
+        db.execSQL("DROP VIEW IF EXISTS " + HISTORY_WITH_FAV );
+
         onCreate(db);
-        */
+
+*/
     }
 
     public TranslatorDBHelper (Context context) {

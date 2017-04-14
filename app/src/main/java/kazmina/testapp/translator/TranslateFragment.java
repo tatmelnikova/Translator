@@ -29,7 +29,7 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 public class TranslateFragment extends Fragment implements LanguagesHolder, TranslateResultHandler{
     private TranslateWatcher mTranslateWatcher;
-    private List<TranslateResultHandler> mResultHandlers;
+    private List<TranslateResultHandler> mResultHandlers = null;
     TranslateResult mTranslateResult = null;
     String mTranslateText = null;
     private String TAG = "TranslateFragment";
@@ -40,7 +40,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     private String mLangFromTitle;
     private String mLangToTitle;
     private SaveResultAction mSaveResultAction;
-    private ShowResultAction mShowResultAction;
+
     private EditText mEditTextTranslate;
 
     @Nullable
@@ -49,7 +49,63 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         View view = inflater.inflate(R.layout.fragment_translate, container, false);
         mView = view;
         mEditTextTranslate = (EditText) view.findViewById(R.id.editTextInput);
+        Bundle args = getArguments();
+        if (savedInstanceState == null && args != null) {
+            saveArguments(args);
+        }else if (savedInstanceState != null){
+            saveArguments(savedInstanceState);
+        }
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+        showTranslateDirection();
+        ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
+        TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
+        ShowResultAction showResultAction = new ShowResultAction(resultTextView);
+        ListenFavoritesAction listenFavoritesAction = new ListenFavoritesAction(getContext(), imageButton);
+        mSaveResultAction = new SaveResultAction(getContext());
+        mResultHandlers = new ArrayList<>();
+        mResultHandlers.add(showResultAction);
+        mResultHandlers.add(mSaveResultAction);
+        mResultHandlers.add(listenFavoritesAction);
+        setWatcher();
+        //при потере фокуса полем ввода текста установить флаг немедленного сохранения результата перевода в истории
+        mEditTextTranslate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                mSaveResultAction.setSaveImmediate(!hasFocus);
+            }
+        });
+        if (mTranslateResult != null) {
+            for (TranslateResultHandler handler : mResultHandlers) {
+                handler.processResult(mTranslateText, mTranslateResult);
+            }
+        }
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
+        mSaveResultAction.setSaveImmediate(true);
+        mResultHandlers = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState");
+        outState.putString(TEXT, mTranslateText);
+        outState.putSerializable(TRANSLATE_RESULT, mTranslateResult);
+        outState.putString(LANG_FROM_VALUE, mLangFrom);
+        outState.putString(LANG_FROM_TITLE, mLangFromTitle);
+        outState.putString(LANG_TO_VALUE, mLangTo);
+        outState.putString(LANG_TO_TITLE, mLangToTitle);
     }
 
 
@@ -65,110 +121,22 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     }
 
     private void showTranslateDirection(){
-        if (mView != null) {
             Button langFromButton = (Button) mView.findViewById(R.id.langFrom);
             langFromButton.setText(mLangFromTitle);
             Button langToButton = (Button) mView.findViewById(R.id.langTo);
             langToButton.setText(mLangToTitle);
-        }
     }
 
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState");
-        outState.putString(TEXT, mTranslateText);
-        outState.putSerializable(TRANSLATE_RESULT, mTranslateResult);
-        outState.putString(LANG_FROM_VALUE, mLangFrom);
-        outState.putString(LANG_FROM_TITLE, mLangFromTitle);
-        outState.putString(LANG_TO_VALUE, mLangTo);
-        outState.putString(LANG_TO_TITLE, mLangToTitle);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause");
-        mSaveResultAction.setSaveImmediate(true);
-        mResultHandlers = null;
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume");
-        setWatcher();
-        showTranslateDirection();
-        ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
-        TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
-        if (mResultHandlers == null) {
-            mShowResultAction = new ShowResultAction(resultTextView);
-            ListenFavoritesAction listenFavoritesAction = new ListenFavoritesAction(getContext(), imageButton);
-            mSaveResultAction = new SaveResultAction(getContext());
-            mResultHandlers = new ArrayList<>();
-            mResultHandlers.add(mShowResultAction);
-            mResultHandlers.add(mSaveResultAction);
-            mResultHandlers.add(listenFavoritesAction);
-
-        }
-        //при потере фокуса полем ввода текста установить флаг немедленного сохранения результата перевода в истории
-        mEditTextTranslate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                mSaveResultAction.setSaveImmediate(!hasFocus);
-            }
-        });
-        if (mTranslateResult != null) {
-            for (TranslateResultHandler handler : mResultHandlers) {
-                handler.processResult(mTranslateText, mTranslateResult);
-            }
-        }
-    }
-
-    void setResultHandlers(Bundle params){
-        if (params != null){
+    void saveArguments(@NonNull  Bundle params){
             mTranslateResult = (TranslateResult) params.getSerializable(TRANSLATE_RESULT);
             mTranslateText = params.getString(TEXT);
             mLangFrom = params.getString(LANG_FROM_VALUE);
             mLangFromTitle = params.getString(LANG_FROM_TITLE);
             mLangTo = params.getString(LANG_TO_VALUE);
             mLangToTitle = params.getString(LANG_TO_TITLE);
-            updateLangs(params);
-        }
-
     }
 
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden){
-            showTranslateDirection();
-            setWatcher();
-        }
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated");
-        Bundle args = getArguments();
-        if (savedInstanceState == null && args != null) {
-            setResultHandlers(args);
-        }else if (savedInstanceState != null){
-            setResultHandlers(savedInstanceState);
-        }
-    }
-
-    public void updateLangs(Bundle params){
-        String langFrom = params.getString(LANG_FROM_VALUE);
-        String langFromTitle = params.getString(LANG_FROM_TITLE);
-        String langTo = params.getString(LANG_TO_VALUE);
-        String langToTitle = params.getString(LANG_TO_TITLE);
-        updateLangs(langFrom, langTo, langFromTitle, langToTitle);
-    }
 
     public void updateLangs(String langFrom, String langTo, String langFromTitle, String langToTitle){
         mLangFrom = langFrom;
@@ -185,5 +153,28 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
             handler.processResult(text, translateResult);
         }
         return true;
+    }
+
+    public void refreshLangs(){
+        showTranslateDirection();
+        setWatcher();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mEditTextTranslate = null;
+        mView = null;
+    }
+
+    public static Fragment getInstance(String langFromValue, String langToValue, String langFromTitle, String langToTitle){
+        Fragment translateFragment = new TranslateFragment();
+        Bundle params = new Bundle();
+        params.putString(LANG_FROM_VALUE, langFromValue);
+        params.putString(LANG_TO_VALUE, langToValue);
+        params.putString(LANG_FROM_TITLE, langFromTitle);
+        params.putString(LANG_TO_TITLE, langToTitle);
+        translateFragment.setArguments(params);
+        return translateFragment;
     }
 }

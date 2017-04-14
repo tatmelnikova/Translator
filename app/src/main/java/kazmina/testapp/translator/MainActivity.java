@@ -48,8 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     showFragment(SHOW_HISTORY_FRAGMENT_TAG);
                     return true;
                 case R.id.navigation_settings:
-
-                    return true;
+                    break;
             }
             return false;
         }
@@ -60,30 +59,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
-        mLanguagesUpdater.update(this);
+        navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);mLanguagesUpdater.update(this);
         restoreFromBundle(savedInstanceState);
         showFragment(TRANSLATE_FRAGMENT_TAG);
     }
-
-    private Fragment createTranslateFragment(){
-
-        Fragment translateFragment ;
-        Bundle params = new Bundle();
-        params.putString(LANG_FROM_VALUE, DEFAULT_LANG_FROM);
-        params.putString(LANG_TO_VALUE, DEFAULT_LANG_TO);
-        params.putString(LANG_FROM_TITLE, DEFAULT_LANG_FROM_TITLE);
-        params.putString(LANG_TO_TITLE, DEFAULT_LANG_TO_TITLE);
-        translateFragment = new TranslateFragment();
-        translateFragment.setArguments(params);
-
-       return translateFragment;
-    }
-
-    private Fragment createHistoryFragment(){
-        return new HistoryFragment();
-    }
-
 
     private void showFragment(String activeFragmentTag){
         FragmentManager fm = getSupportFragmentManager();
@@ -100,25 +79,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (active == null){
             switch (activeFragmentTag){
                 case SHOW_HISTORY_FRAGMENT_TAG:
-                    active = createHistoryFragment();
+                    active = HistoryFragment.getInstance();
                     break;
                 case TRANSLATE_FRAGMENT_TAG:
-                    active = createTranslateFragment();
+                    active = TranslateFragment.getInstance(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
                     break;
                 default:
                     break;
             }
-            //ft.add(R.id.fragmentContainer, active, activeFragmentTag);
         }else{
-            if (activeFragmentTag.equals(TRANSLATE_FRAGMENT_TAG)) ((TranslateFragment)active).updateLangs(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
-            //ft.replace(R.id.fragmentContainer, active, activeFragmentTag);
-            //ft.addToBackStack(null);
-            //ft.show(active);
+            if (activeFragmentTag.equals(TRANSLATE_FRAGMENT_TAG)) {
+                ((TranslateFragment)active).updateLangs(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
+                if (active.isVisible())((TranslateFragment)active).refreshLangs();
+            }
         }
 
         if (active != null && active.isAdded()){
             ft.show(active);
-        }else{
+        }else if (active != null ){
             ft.add( R.id.fragmentContainer, active, activeFragmentTag);
         }
         ft.commit();

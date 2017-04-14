@@ -59,6 +59,10 @@ public class HistoryFragment extends Fragment implements View.OnClickListener{
         return view;
     }
 
+    public static Fragment getInstance(){
+        return new HistoryFragment();
+    }
+
     private class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<HistoryListFragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
