@@ -45,7 +45,7 @@ public class DBBackend implements DBContract {
      * * @param searchText - текст для поиска
      * @return курсор
      */
-     Cursor getHistoryWithFav(String searchText){
+     public Cursor getHistoryWithFav(String searchText){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         Cursor c = null;
         try {
@@ -219,7 +219,7 @@ public class DBBackend implements DBContract {
      * копирует запись из истории в избранное
      * @param itemID - идентификатор нужной записи
      */
-    void copyHistoryItemToFavorites(int itemID){
+    public void copyHistoryItemToFavorites(int itemID){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.beginTransaction();
         String sql = ("INSERT INTO "+ FAVORITES + "("
