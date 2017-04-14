@@ -1,4 +1,4 @@
-package kazmina.testapp.translator.interfaces;
+package kazmina.testapp.translator.translate;
 
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 

@@ -1,4 +1,4 @@
-package kazmina.testapp.translator.retrofitModels;
+package kazmina.testapp.translator.history;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,8 +15,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import kazmina.testapp.translator.FavoritesListFragment;
-import kazmina.testapp.translator.HistoryListFragment;
 import kazmina.testapp.translator.R;
 
 /**

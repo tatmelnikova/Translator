@@ -1,7 +1,6 @@
-package kazmina.testapp.translator.interfaces;
+package kazmina.testapp.translator.translate;
 
 import android.content.Context;
-import android.util.Log;
 
 import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBProvider;

@@ -1,9 +1,11 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.history;
 
 import android.database.Cursor;
 import android.util.Log;
 
 import kazmina.testapp.translator.db.DBProvider;
+import kazmina.testapp.translator.history.HistoryCursorAdapter;
+import kazmina.testapp.translator.history.HistoryListFragment;
 
 /**
  * фрагмент, содержащий список избранного

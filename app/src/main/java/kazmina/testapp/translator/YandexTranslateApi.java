@@ -12,7 +12,7 @@ import retrofit2.http.Query;
  * key = trnsl.1.1.20170320T074137Z.b79dbc842fbc5526.fd9448c978b6f6ad53587000adc0d56613cd4358
  */
 
-interface YandexTranslateApi {
+public interface YandexTranslateApi {
     /**
      * @param currentLangID - текущий язык локали
      * @return LanguageLocalisation - список кодов языков с переводами для заданной локали

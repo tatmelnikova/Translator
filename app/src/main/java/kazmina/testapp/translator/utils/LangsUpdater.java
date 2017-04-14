@@ -1,4 +1,4 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.utils;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -6,6 +6,8 @@ import android.util.Log;
 
 import java.util.Locale;
 
+import kazmina.testapp.translator.TranslatorApplication;
+import kazmina.testapp.translator.YandexTranslateApi;
 import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBProvider;
 import kazmina.testapp.translator.interfaces.LanguagesUpdater;

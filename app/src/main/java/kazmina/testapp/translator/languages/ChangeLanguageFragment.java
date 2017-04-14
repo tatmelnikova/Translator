@@ -1,4 +1,4 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.languages;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,27 +7,22 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
+import kazmina.testapp.translator.R;
 import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBContract;
 import kazmina.testapp.translator.db.DBNotificationManager;
 import kazmina.testapp.translator.db.DBProvider;
 import kazmina.testapp.translator.interfaces.LanguageListener;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
-import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
+import kazmina.testapp.translator.languages.LanguagesAdapter;
 
 /**
  * фрагмент для отображения списка доступных языков

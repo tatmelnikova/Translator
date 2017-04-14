@@ -1,4 +1,4 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.translate;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,11 +16,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import kazmina.testapp.translator.R;
+
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
-import kazmina.testapp.translator.interfaces.SaveResultAction;
-import kazmina.testapp.translator.interfaces.ListenFavoritesAction;
-import kazmina.testapp.translator.interfaces.ShowResultAction;
-import kazmina.testapp.translator.interfaces.TranslateResultHandler;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 /**

@@ -1,4 +1,4 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.languages;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,6 +10,7 @@ import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import kazmina.testapp.translator.R;
 import kazmina.testapp.translator.db.DBContract;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 

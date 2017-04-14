@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.CheckableImageButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -18,7 +17,10 @@ import java.util.List;
 import kazmina.testapp.translator.interfaces.LanguageListener;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.interfaces.LanguagesUpdater;
-import kazmina.testapp.translator.retrofitModels.HistoryFragment;
+import kazmina.testapp.translator.history.HistoryFragment;
+import kazmina.testapp.translator.languages.ChangeLanguageFragment;
+import kazmina.testapp.translator.translate.TranslateFragment;
+import kazmina.testapp.translator.utils.LangsUpdater;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, LanguagesHolder, LanguageListener {

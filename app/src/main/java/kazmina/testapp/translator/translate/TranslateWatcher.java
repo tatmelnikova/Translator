@@ -1,4 +1,4 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.translate;
 
 import android.support.annotation.NonNull;
 import android.text.Editable;
@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import kazmina.testapp.translator.interfaces.TranslateResultHandler;
+import kazmina.testapp.translator.TranslatorApplication;
+import kazmina.testapp.translator.YandexTranslateApi;
+import kazmina.testapp.translator.translate.TranslateResultHandler;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,7 +21,7 @@ import retrofit2.Response;
  * слушатель полей ввода текста для перевода
  */
 
-class TranslateWatcher implements TextWatcher{
+public class TranslateWatcher implements TextWatcher{
     private Timer mTimer = new Timer();
     private final String TAG = "TranslateWatcher";
     private String mTranslateDirection;
@@ -36,7 +38,7 @@ class TranslateWatcher implements TextWatcher{
      * @param langTo - идентификатор языка, на который переводим
      * @param handler - обработчик результата перевода
      */
-    TranslateWatcher(@NonNull String langFrom, @NonNull String langTo, TranslateResultHandler handler) {
+    public TranslateWatcher(@NonNull String langFrom, @NonNull String langTo, TranslateResultHandler handler) {
         super();
         mTranslateResultHandler = handler;
         mTranslateDirection = langFrom.concat(mDelimeter).concat(langTo);

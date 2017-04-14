@@ -1,10 +1,5 @@
-package kazmina.testapp.translator.interfaces;
+package kazmina.testapp.translator.translate;
 
-import android.content.Context;
-import android.graphics.PorterDuff;
-import android.support.v4.content.res.ResourcesCompat;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -15,7 +10,7 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
  * обработчик для отображения результата перевода
  */
 
-public class ShowResultAction implements  TranslateResultHandler {
+public class ShowResultAction implements TranslateResultHandler {
     private TextView mResultText;
     public ShowResultAction(TextView resultView) {
         super();

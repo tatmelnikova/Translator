@@ -1,11 +1,8 @@
-package kazmina.testapp.translator.interfaces;
+package kazmina.testapp.translator.translate;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.media.Image;
-import android.support.design.widget.CheckableImageButton;
 import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 

@@ -1,4 +1,4 @@
-package kazmina.testapp.translator;
+package kazmina.testapp.translator.history;
 
 
 import android.content.Context;
@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import kazmina.testapp.translator.R;
 import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBContract;
 import kazmina.testapp.translator.db.DBNotificationManager;
