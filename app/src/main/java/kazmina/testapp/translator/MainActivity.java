@@ -14,6 +14,7 @@ import android.view.View;
 
 import java.util.List;
 
+import kazmina.testapp.translator.interfaces.FragmentTags;
 import kazmina.testapp.translator.interfaces.LanguageListener;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.interfaces.LanguagesUpdater;
@@ -23,12 +24,8 @@ import kazmina.testapp.translator.translate.TranslateFragment;
 import kazmina.testapp.translator.utils.LangsUpdater;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, LanguagesHolder, LanguageListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, LanguagesHolder,FragmentTags, LanguageListener {
     private final String TAG = "MainActivity";
-
-    private final String TRANSLATE_FRAGMENT_TAG = "TRANSLATE_FRAGMENT_TAG";
-    private final String CHANGE_LANG_FRAGMENT_TAG = "CHANGE_LANG_FRAGMENT_TAG";
-    private final String SHOW_HISTORY_FRAGMENT_TAG = "SHOW_HISTORY";
 
     private String mLangFrom = DEFAULT_LANG_FROM;
     private String mLangTo = DEFAULT_LANG_TO;
