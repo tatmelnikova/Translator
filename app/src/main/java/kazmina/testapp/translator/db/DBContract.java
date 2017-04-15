@@ -10,6 +10,7 @@ public interface DBContract {
     String FAVORITES = "favorites";
     String HISTORY_WITH_FAV = "history_with_fav";
     String LANGUAGES = "languages";
+    String LANGUAGES_WITH_USED = "languages_with_used";
 
     interface History {
         String ID = "_id";
@@ -33,6 +34,7 @@ public interface DBContract {
         String CODE = "code";
         String TITLE = "title";
         String LOCALE = "locale";
+        String LAST_USED = "last_used";
         String UNIQUE_LOC = "unique_loc";
     }
 }

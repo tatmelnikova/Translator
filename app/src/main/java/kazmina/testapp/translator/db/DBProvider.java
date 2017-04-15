@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.VisibleForTesting;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -87,6 +88,15 @@ public class DBProvider {
         });
     }
 
+
+    public void setLanguageTimeStamp(final Integer id, final Date date){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDBBackend.setLanguageTimeStamp(id, date);
+            }
+        });
+    }
     public void updateLanguages(final String locale, final HashMap<String, String> languagesMap, final ResultCallback<Cursor> callback){
         mExecutor.execute(new Runnable() {
             @Override

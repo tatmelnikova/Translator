@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.Date;
 import java.util.Locale;
 
 import kazmina.testapp.translator.R;
@@ -36,6 +37,7 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
     private DBProvider mDBProvider;
     private DBNotificationManager mDBNotificationManager;
     ListView mListViewLangs;
+    private String mLocale;
 
     private DBNotificationManager.Listener mDbListener = new DBNotificationManager.Listener(){
         @Override
@@ -81,19 +83,22 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String selectedLangValue = null;
         String selectedLangTitle = null;
+        Integer selectedLangId = null;
         try {
             Cursor c = (Cursor) parent.getAdapter().getItem(position);
             selectedLangTitle =  c.getString(c.getColumnIndex(DBContract.Languages.TITLE));
             selectedLangValue = c.getString(c.getColumnIndex(DBContract.Languages.CODE));
+            selectedLangId = c.getInt(c.getColumnIndex(DBContract.Languages.ID));
         }catch (Exception e){
             Log.d(TAG, "" + e.getMessage());
         }
+        mDBProvider.setLanguageTimeStamp(selectedLangId, new Date());
         mListener.changeLanguage(mTargetView, selectedLangValue, selectedLangTitle);
     }
 
     private void populateList(){
-        String locale = Locale.getDefault().getLanguage();
-        mDBProvider.getLanguages(locale, new DBProvider.ResultCallback<Cursor>() {
+        mLocale = Locale.getDefault().getLanguage();
+        mDBProvider.getLanguages(mLocale, new DBProvider.ResultCallback<Cursor>() {
             @Override
             public void onFinished(Cursor result) {
                 CursorAdapter adapter = (CursorAdapter) mListViewLangs.getAdapter();

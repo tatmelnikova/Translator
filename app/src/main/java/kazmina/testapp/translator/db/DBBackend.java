@@ -9,6 +9,7 @@ import android.text.format.Time;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +144,15 @@ public class DBBackend implements DBContract {
         return inFav;
     }
 
+
+    /*
+    * select languages._id, code, title, locale, used
+        from languages
+        left join (Select _id, timestamp as used From languages order by timestamp desc limit 3) as usedlangs
+        on usedlangs._id=languages._id
+        where locale="ru"
+        order by used isnull asc, title asc
+    * */
     Cursor getLanguages(String locale){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         Cursor c = null;
@@ -157,6 +167,23 @@ public class DBBackend implements DBContract {
             Log.d(TAG, "" + e.getMessage());
         }
         return c;
+    }
+
+    void setLanguageTimeStamp(Integer id, Date date){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        try {
+            db.beginTransaction();
+            ContentValues values = new ContentValues();
+            values.put(Languages.LAST_USED, date.getTime());
+            db.update(LANGUAGES, values, Languages.ID + " = ?",
+                    new String[] { String.valueOf(id) });
+            db.setTransactionSuccessful();
+        }catch (Exception e){
+            Log.d(TAG, "" + e.getMessage());
+        }finally {
+            db.endTransaction();
+        }
+        showLangs();
     }
     /**
      * добавляет результат перевода в историю
@@ -281,7 +308,7 @@ public class DBBackend implements DBContract {
         while (cursor.moveToNext()) {
             int i = 0;
             while (i < cursor.getColumnCount()) {
-                //Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
+                Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
                 i++;
             }
 
