@@ -73,7 +73,8 @@
                 android:textAlignment="viewStart"
 
                 android:layout_toLeftOf="@+id/imageViewFav"
-                android:layout_toStartOf="@+id/imageViewFav"/>
+                android:layout_toStartOf="@+id/imageViewFav"
+                android:layout_above="@+id/copyright"/>
             <ImageView
                 android:id="@+id/imageViewFav"
                 android:layout_width="@dimen/fav_icon_width"
@@ -92,7 +93,18 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_below="@+id/imageViewFav"
-                android:layout_toEndOf="@+id/textViewResult"/>
+                android:layout_toEndOf="@+id/textViewResult"
+                android:layout_toRightOf="@+id/textViewResult"/>
+            <TextView
+                android:id="@+id/copyright"
+                android:visibility="gone"
+                android:text="@string/copyright"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                />
         </RelativeLayout>
 
     </RelativeLayout>

@@ -1,5 +1,6 @@
 package kazmina.testapp.translator.translate;
 
+import android.view.View;
 import android.widget.TextView;
 
 
@@ -12,22 +13,24 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 public class ShowResultAction implements TranslateResultHandler {
     private TextView mResultText;
-    public ShowResultAction(TextView resultView) {
+    private TextView mCopyrightText;
+    public ShowResultAction(TextView resultView, TextView copyrightView) {
         super();
         mResultText = (TextView) resultView.findViewById(R.id.textViewResult);
+        mCopyrightText = copyrightView;
     }
 
     @Override
     public boolean processResult(String text, TranslateResult translateResult) {
-        if (text != null && text.length() > 0) {
+        if (translateResult != null) {
             mResultText.setText("");
-            if (translateResult != null) {
-                for (String textPart : translateResult.getText()) {
-                    mResultText.append(textPart);
-                }
+            for (String textPart : translateResult.getText()) {
+                mResultText.append(textPart);
             }
+            mCopyrightText.setVisibility(View.VISIBLE);
         }else{
             mResultText.setText("");
+            mCopyrightText.setVisibility(View.GONE);
         }
         return true;
     }

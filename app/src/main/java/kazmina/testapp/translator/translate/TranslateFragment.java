@@ -64,7 +64,9 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         showTranslateDirection();
         ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
         TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
-        ShowResultAction showResultAction = new ShowResultAction(resultTextView);
+        TextView copyrightTextView = (TextView) mView.findViewById(R.id.copyright);
+        ShowResultAction showResultAction = new ShowResultAction(resultTextView, copyrightTextView);
+
         ListenFavoritesAction listenFavoritesAction = new ListenFavoritesAction(getContext(), imageButton);
         mSaveResultAction = new SaveResultAction(getContext());
         mResultHandlers = new ArrayList<>();
@@ -86,6 +88,16 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         }
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden){
+            ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
+            ListenFavoritesAction favoritesAction = new ListenFavoritesAction(getContext(), imageButton);
+            favoritesAction.processResult(mTranslateText, mTranslateResult);
+            refreshLangs();
+        }
+    }
 
     @Override
     public void onPause() {

@@ -118,7 +118,7 @@ public class TranslateWatcher implements TextWatcher{
 
                                 @Override
                                 public void onFailure(Call<TranslateResult> call, Throwable t) {
-                                    mTranslateResultHandler.handleError(0, t.getMessage());
+                                    mTranslateResultHandler.handleError(null,null);
                                 }
                             });
                         }
