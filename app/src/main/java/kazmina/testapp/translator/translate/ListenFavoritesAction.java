@@ -56,6 +56,11 @@ public class ListenFavoritesAction implements TranslateResultHandler, View.OnCli
     }
 
     @Override
+    public void handleError(Integer code, String message) {
+
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.imageViewFav:

@@ -7,6 +7,6 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
  */
 
 public interface TranslateResultHandler {
-    TranslateResult translateResult = null;
     boolean processResult(String text, TranslateResult translateResult);
+    void handleError(Integer code, String message);
 }

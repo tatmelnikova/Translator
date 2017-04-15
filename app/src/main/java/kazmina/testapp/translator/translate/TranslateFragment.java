@@ -18,6 +18,7 @@ import java.util.List;
 
 import kazmina.testapp.translator.R;
 
+import kazmina.testapp.translator.api.APIErrorMessages;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
@@ -25,7 +26,7 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
  * фрагмент основного окна перевода
  */
 
-public class TranslateFragment extends Fragment implements LanguagesHolder, TranslateResultHandler{
+public class TranslateFragment extends Fragment implements LanguagesHolder, TranslateResultHandler, APIErrorMessages{
     private TranslateWatcher mTranslateWatcher;
     private List<TranslateResultHandler> mResultHandlers = null;
     TranslateResult mTranslateResult = null;
@@ -151,6 +152,33 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
             handler.processResult(text, translateResult);
         }
         return true;
+    }
+
+    @Override
+    public void handleError(Integer code, String message) {
+        String localisedMessage;
+        if (code != null) {
+            switch (code) {
+                case CODE_INVALID:
+                    localisedMessage = getString(MESSAGE_INVALID);
+                    break;
+                case CODE_BLOCKED:
+                    localisedMessage = getString(MESSAGE_BLOCKED);
+                    break;
+                case CODE_LIMIT:
+                    localisedMessage = getString(MESSAGE_LIMIT);
+                    break;
+                default:
+                    localisedMessage = getString(MESSAGE_OTHER);
+                    break;
+            }
+        }else{
+            localisedMessage = getString(MESSAGE_EMPTY);
+        }
+
+        for (TranslateResultHandler handler : mResultHandlers){
+            handler.handleError(code, localisedMessage);
+        }
     }
 
     public void refreshLangs(){

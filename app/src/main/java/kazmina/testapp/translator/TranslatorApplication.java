@@ -22,6 +22,9 @@ public class TranslatorApplication extends Application {
         sYandexTranslateApi = sRetrofit.create(YandexTranslateApi.class); //Создаем объект, при помощи которого будем выполнять запросы
     }
 
+    public  Retrofit getRetrofit(){
+        return sRetrofit;
+    }
     public static YandexTranslateApi getApi() {
         return sYandexTranslateApi;
     }

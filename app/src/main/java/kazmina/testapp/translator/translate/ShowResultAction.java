@@ -31,4 +31,9 @@ public class ShowResultAction implements TranslateResultHandler {
         }
         return true;
     }
+
+    @Override
+    public void handleError(Integer code, String message) {
+        mResultText.setText(message);
+    }
 }

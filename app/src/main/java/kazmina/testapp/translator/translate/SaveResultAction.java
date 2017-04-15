@@ -32,6 +32,11 @@ public class SaveResultAction implements TranslateResultHandler {
         return true;
     }
 
+    @Override
+    public void handleError(Integer code, String message) {
+
+    }
+
     /**
      * @param immediate = true, если нужно сохранять результат перевода сразу при готовности
      */

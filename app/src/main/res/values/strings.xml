@@ -9,4 +9,9 @@
     <string name="tab_favorites">Избранное</string>
     <string name="fav_icon_title">В избранное</string>
     <string name="title_delete_history">Удалить историю</string>
+    <string name="message_limit">Невозможно получить перевод. Превышено суточное ограничение на объем переведенного текста</string>
+    <string name="message_blocked">Невозможно получить перевод. API-ключ заблокирован</string>
+    <string name="message_invalid">Невозможно получить перевод. Приложением передан неправильный API-ключ</string>
+    <string name="message_other">Невозможно получить перевод. Непредусмотренный ответ сервера</string>
+    <string name="message_empty_code">Не получен ответ от сервера. Проверьте подключение к сети.</string>
 </resources>
