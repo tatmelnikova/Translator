@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference android:key="settings_used_langs"
+        android:title="@string/settings_langs_title"
+        android:summary ="@string/settings_langs_save"
+        android:defaultValue="true"/>
+    <CheckBoxPreference
+        android:key="settings_autodetect"
+        android:title="@string/settings_autodetect"
+        android:defaultValue="true" />
+    <Preference
+        android:key="settings_about"
+        android:selectable="false"
+        android:persistent="false"
+        android:title="@string/settings_about"
+        android:summary="Multi line description\ncan go here."/>
+</PreferenceScreen>

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -22,6 +23,7 @@ import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.interfaces.LanguagesUpdater;
 import kazmina.testapp.translator.history.HistoryFragment;
 import kazmina.testapp.translator.languages.ChangeLanguageFragment;
+import kazmina.testapp.translator.preference.PreferenceFragment;
 import kazmina.testapp.translator.translate.TranslateFragment;
 import kazmina.testapp.translator.utils.LangsUpdater;
 
@@ -49,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     showFragment(SHOW_HISTORY_FRAGMENT_TAG);
                     return true;
                 case R.id.navigation_settings:
+                    showFragment(SETTINGS_FRAGMENT_TAG);
+                    return true;
+                default:
                     break;
             }
             return false;
@@ -82,10 +87,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (active == null){
             switch (activeFragmentTag){
                 case SHOW_HISTORY_FRAGMENT_TAG:
+                    hideKeyboard();
                     active = HistoryFragment.getInstance();
                     break;
                 case TRANSLATE_FRAGMENT_TAG:
                     active = TranslateFragment.getInstance(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
+                    break;
+                case SETTINGS_FRAGMENT_TAG:
+                    hideKeyboard();
+                    active = PreferenceFragment.getInstance();
                     break;
                 default:
                     break;
@@ -106,13 +116,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showLangsFragment(Integer viewID, String selectedLang){
+        hideKeyboard();
         ChangeLanguageFragment changeLanguageFragment =  ChangeLanguageFragment.getInstance(viewID, selectedLang);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.hide(fm.findFragmentByTag(TRANSLATE_FRAGMENT_TAG));
         ft.add(R.id.changeLangsContainer, changeLanguageFragment, CHANGE_LANG_FRAGMENT_TAG);
         ft.commit();
-        hideKeyboard();
         View langsView = findViewById(R.id.changeLangsContainer);
         langsView.setVisibility(View.VISIBLE);
     }
