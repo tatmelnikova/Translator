@@ -92,9 +92,9 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden){
-            ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
-            ListenFavoritesAction favoritesAction = new ListenFavoritesAction(getContext(), imageButton);
-            favoritesAction.processResult(mTranslateText, mTranslateResult);
+            //ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
+            //ListenFavoritesAction favoritesAction = new ListenFavoritesAction(getContext(), imageButton);
+            //favoritesAction.processResult(mTranslateText, mTranslateResult);
             refreshLangs();
         }
     }
@@ -196,6 +196,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     public void refreshLangs(){
         showTranslateDirection();
         setWatcher();
+        mEditTextTranslate.setText(mEditTextTranslate.getText());
     }
 
     @Override
