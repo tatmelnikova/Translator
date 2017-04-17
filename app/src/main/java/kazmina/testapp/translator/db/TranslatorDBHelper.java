@@ -30,7 +30,6 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
     private final Context mHelperContext;
     private final String TAG = "TranslatorDBHelper";
     private SQLiteDatabase mSQLiteDatabase;
-
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
@@ -89,8 +88,13 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
                         Languages.CODE + " STRING NOT NULL, " +
                         Languages.TITLE + " STRING NOT NULL, " +
                         Languages.LOCALE + " STRING NOT NULL, " +
+                        Languages.LAST_USED + " STRING DEFAULT NULL, " +
                         "CONSTRAINT " + Languages.UNIQUE_LOC +" UNIQUE ( " + Languages.LOCALE +", " + Languages.CODE + ")" +
         ")";
+
+        /*
+        * CREATE TABLE languages(_id INTEGER PRIMARY KEY AUTOINCREMENT, code STRING NOT NULL, title STRING NOT NULL, locale STRING NOT NULL, last_used STRING DEFAULT NULL, CONSTRAINT unique_loc UNIQUE ( locale, code))
+        * */
         db.execSQL(langsSql);
         loadLanguages();
     }

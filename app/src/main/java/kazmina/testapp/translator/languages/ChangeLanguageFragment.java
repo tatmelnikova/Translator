@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +38,7 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
     private LanguageListener mListener;
     private DBProvider mDBProvider;
     private DBNotificationManager mDBNotificationManager;
-    ListView mListViewLangs;
+    RecyclerView mRecyclerViewLangs;
     private String mLocale;
 
     private DBNotificationManager.Listener mDbListener = new DBNotificationManager.Listener(){
@@ -73,8 +75,34 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_change_lang, container, false);
-        mListViewLangs = (ListView) view.findViewById(R.id.langsList);
-        mListViewLangs.setOnItemClickListener(this);
+        mRecyclerViewLangs = (RecyclerView) view.findViewById(R.id.langsRecycler);
+        //mRecyclerViewLangs.setOnItemClickListener(this);
+        mRecyclerViewLangs.addOnItemTouchListener(
+                new RecyclerItemClickListener(getContext(), mRecyclerViewLangs ,new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position) {
+                        String selectedLangValue = null;
+                        String selectedLangTitle = null;
+                        Integer selectedLangId = null;
+                        try {
+                            LanguagesCursorAdapter adapter = (LanguagesCursorAdapter) mRecyclerViewLangs.getAdapter();
+                            Cursor c = adapter.getCursor();
+                            c.moveToPosition(position);
+                            selectedLangTitle =  c.getString(c.getColumnIndex(DBContract.Languages.TITLE));
+                            selectedLangValue = c.getString(c.getColumnIndex(DBContract.Languages.CODE));
+                            selectedLangId = c.getInt(c.getColumnIndex(DBContract.Languages.ID));
+                        }catch (Exception e){
+                            Log.d(TAG, "" + e.getMessage());
+                        }
+                        mDBProvider.setLanguageTimeStamp(selectedLangId, new Date());
+                        mListener.changeLanguage(mTargetView, selectedLangValue, selectedLangTitle);
+                    }
+
+                    @Override public void onLongItemClick(View view, int position) {
+                        // do whatever
+                    }
+                })
+        );
+        mRecyclerViewLangs.setAdapter(null);
         populateList();
         return  view;
     }
@@ -98,14 +126,22 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
 
     private void populateList(){
         mLocale = Locale.getDefault().getLanguage();
-        mDBProvider.getLanguages(mLocale, new DBProvider.ResultCallback<Cursor>() {
+        Cursor c = null;
+        LanguagesCursorAdapter adapter = new LanguagesCursorAdapter(R.layout.lang_list_item, c, mCurrentLangCode);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerViewLangs.setLayoutManager(llm);
+        mRecyclerViewLangs.setAdapter(adapter);
+        mDBProvider.getLanguagesWithUsed(mLocale, new DBProvider.ResultCallback<Cursor>() {
             @Override
             public void onFinished(Cursor result) {
-                CursorAdapter adapter = (CursorAdapter) mListViewLangs.getAdapter();
+                LanguagesCursorAdapter adapter = (LanguagesCursorAdapter) mRecyclerViewLangs.getAdapter();
                 if (adapter == null){
-                    mListViewLangs.setAdapter(new LanguagesAdapter(getContext(), result, 1, mCurrentLangCode));
+                    adapter = new LanguagesCursorAdapter(R.layout.lang_list_item, result, mCurrentLangCode);
+                    //mListViewLangs.setAdapter(new LanguagesAdapter(getContext(), result, 1, mCurrentLangCode));
+                    mRecyclerViewLangs.setAdapter(adapter);
                 }else{
-                    adapter.changeCursor(result);
+                    adapter.swapCursor(result);
                 }
             }
         });

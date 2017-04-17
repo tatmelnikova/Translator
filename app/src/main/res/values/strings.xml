@@ -15,4 +15,6 @@
     <string name="message_other">Невозможно получить перевод. Непредусмотренный ответ сервера</string>
     <string name="message_empty_code">Не получен ответ от сервера. Проверьте подключение к сети.</string>
     <string name="copyright">Переведено сервисом <a href="http://translate.yandex.ru/">«Яндекс.Переводчик»</a></string>
+    <string name="used_langs">Недавно использованные</string>
+    <string name="all_langs">Все языки</string>
 </resources>

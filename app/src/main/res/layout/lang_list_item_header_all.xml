@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              xmlns:android="http://schemas.android.com/apk/res/android">
+<TextView style="@style/changeLangHeaderItem"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/header_text"
+          android:text="@string/all_langs"
+          />
+<CheckedTextView
+                 android:id="@+id/checkedTextViewLanguage"
+                 style="@style/changeLangListItem"
+                 android:layout_width="match_parent"
+                 android:text="@string/all_langs"
+                 android:layout_height="?android:attr/listPreferredItemHeightSmall"
+                 android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                 android:gravity="center_vertical"
+                 android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+                  />
+    </LinearLayout>

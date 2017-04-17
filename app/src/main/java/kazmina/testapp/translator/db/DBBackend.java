@@ -169,6 +169,59 @@ public class DBBackend implements DBContract {
         return c;
     }
 
+    Cursor getLanguagesWithUsed(String locale, Integer used){
+        if (used == null) used = 3;
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        Cursor c = null;
+        try {
+            /*String sql = "SELECT " +
+            LANGUAGES + "." + Languages.ID + ", " +
+                    LANGUAGES + "." + Languages.CODE + ", " +
+                    LANGUAGES + "." + Languages.TITLE + ", " +
+                    LANGUAGES + "." + Languages.LOCALE + ", " +
+                    LANGUAGES + "." + Languages.LAST_USED +
+                    " FROM " + LANGUAGES +
+                    " LEFT JOIN  (SELECT " + LANGUAGES + "." + Languages.ID   +", " + LANGUAGES + "."+Languages.LAST_USED +
+                    " FROM " + LANGUAGES + " ORDER BY " +  LANGUAGES + "."+Languages.LAST_USED + " LIMIT " + String.valueOf(used) + ")" +
+                    " as usedlangs ON usedlangs." + Languages.ID + "=" + LANGUAGES + "." + Languages.ID +
+                    " WHERE locale = ?" +
+                    " ORDER BY " + LANGUAGES  + "."+ Languages.LAST_USED + " isnull asc, " + Languages.TITLE + " asc";
+                    */
+            String sql =
+                    "SELECT * FROM " +
+                        "(" +
+                            "SELECT " +
+                            Languages.ID + ", " +
+                            Languages.CODE + ", " +
+                            Languages.TITLE + ", " +
+                            Languages.LOCALE + ", " +
+                            Languages.LAST_USED +
+                            " FROM " + LANGUAGES +
+                            " WHERE " + Languages.LOCALE  + " = \""+ locale + "\" AND " +Languages.LAST_USED +" IS NOT NULL "+
+                            " ORDER BY " + Languages.LAST_USED + " DESC LIMIT " + String.valueOf(used)+
+                         ")"+
+                    " UNION ALL SELECT * FROM "+
+                        "( "+
+                            "SELECT " +
+                            Languages.ID + ", " +
+                            Languages.CODE + ", " +
+                            Languages.TITLE + ", " +
+                            Languages.LOCALE + ", " +
+                            " NULL AS " + Languages.LAST_USED +
+                            " FROM " + LANGUAGES +
+                            " WHERE " + Languages.LOCALE  + " =  \""+ locale + "\""+
+                        ")" +
+                    " ORDER BY " + Languages.LAST_USED + " desc, " + Languages.TITLE + " asc "
+                    ;
+
+            //c = db.rawQuery(sql, new String[]{locale});
+            c = db.rawQuery(sql,null);
+        }catch (Exception e){
+            Log.d(TAG, "" + e.getMessage());
+        }
+        return c;
+    }
+
     void setLanguageTimeStamp(Integer id, Date date){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         try {

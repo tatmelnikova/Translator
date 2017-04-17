@@ -31,9 +31,15 @@
         <item name="android:textSize">@dimen/large_font_size</item>
     </style>
 
+    <style name="changeLangHeaderItem">
+        <item name="android:paddingTop">@dimen/inner_block_padding</item>
+        <item name="android:paddingBottom">@dimen/inner_block_padding</item>
+        <item name="android:background">@drawable/checked_text_view_default</item>
+    </style>
     <style name="changeLangListItem">
         <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
         <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:background">@drawable/checked_text_view_bg</item>
     </style>
     <!-- история -->
     <style name="AppTabLayout" parent="Widget.Design.TabLayout">

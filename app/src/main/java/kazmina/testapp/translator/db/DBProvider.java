@@ -97,6 +97,21 @@ public class DBProvider {
             }
         });
     }
+
+    public void getLanguagesWithUsed(final String locale, final ResultCallback<Cursor> callback){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final Cursor c = mDBBackend.getLanguagesWithUsed(locale, 3);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onFinished(c);
+                    }
+                });
+            }
+        });
+    }
     public void updateLanguages(final String locale, final HashMap<String, String> languagesMap, final ResultCallback<Cursor> callback){
         mExecutor.execute(new Runnable() {
             @Override
