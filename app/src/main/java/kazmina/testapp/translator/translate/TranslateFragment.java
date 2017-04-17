@@ -1,5 +1,7 @@
 package kazmina.testapp.translator.translate;
 
+import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,9 +18,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import kazmina.testapp.translator.FragmentCommunicator;
 import kazmina.testapp.translator.R;
 
 import kazmina.testapp.translator.api.APIErrorMessages;
+import kazmina.testapp.translator.interfaces.LanguageListener;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
@@ -41,11 +45,22 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     private SaveResultAction mSaveResultAction;
 
     private EditText mEditTextTranslate;
+    private FragmentCommunicator mListener;
 
     /*@todo
     * восстанавливать фрагмент истории или настроек, если он был открытым
     * добавить слушатель смены языков во фрагменте
     * */
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (FragmentCommunicator) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement FragmentCommunicator");
+        }
+    }
 
     @Nullable
     @Override
@@ -53,6 +68,12 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         View view = inflater.inflate(R.layout.fragment_translate, container, false);
         mView = view;
         mEditTextTranslate = (EditText) view.findViewById(R.id.editTextInput);
+        View from = view.findViewById(R.id.langFrom);
+        from.setOnClickListener(this);
+        View to = view.findViewById(R.id.langTo);
+        to.setOnClickListener(this);
+        View rotate = view.findViewById(R.id.rotate);
+        rotate.setOnClickListener(this);
         Bundle args = getArguments();
         if (savedInstanceState == null && args != null) {
             saveArguments(args);
@@ -150,14 +171,26 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
             mLangToTitle = params.getString(LANG_TO_TITLE);
     }
 
+    public void setLanguage(int viewId, String langValue, String langTitle){
 
-    public void updateLangs(String langFrom, String langTo, String langFromTitle, String langToTitle){
-        mLangFrom = langFrom;
-        mLangTo = langTo;
-        mLangFromTitle = langFromTitle;
-        mLangToTitle = langToTitle;
+        if (viewId == R.id.langFrom){
+            if (langValue.equals(mLangTo)){
+                swapTranslateDirection();
+            }else{
+                mLangFrom = langValue;
+                mLangFromTitle = langTitle;
+            }
+
+        }else if (viewId == R.id.langTo){
+            if (langValue.equals(mLangFrom)){
+                swapTranslateDirection();
+            }else{
+                mLangTo = langValue;
+                mLangFromTitle = langTitle;
+            }
+        }
+        showTranslateDirection();
     }
-
     @Override
     public boolean processResult(String text, TranslateResult translateResult) {
         mTranslateText = text;
@@ -221,6 +254,36 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.langFrom:
+                mListener.onSelectLangButtonClicked(R.id.langFrom, mLangFrom);
+                break;
+            case R.id.langTo:
+                mListener.onSelectLangButtonClicked(R.id.langTo, mLangTo);
+                break;
+            case R.id.swapLang:
+                swapTranslateDirection();
+                break;
+            case R.id.rotate:
+                if (!"1".equals(v.getTag())) {
+                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    v.setTag("1");
+                }else{
+                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    v.setTag("0");
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
+    private void swapTranslateDirection(){
+        String tmp = mLangFrom;
+        mLangFrom = mLangTo;
+        mLangTo = tmp;
+        tmp = mLangFromTitle;
+        mLangFromTitle = mLangToTitle;
+        mLangToTitle = tmp;
     }
 }

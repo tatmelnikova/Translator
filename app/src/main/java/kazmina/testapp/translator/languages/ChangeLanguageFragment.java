@@ -18,6 +18,7 @@ import android.widget.ListView;
 import java.util.Date;
 import java.util.Locale;
 
+import kazmina.testapp.translator.FragmentCommunicator;
 import kazmina.testapp.translator.R;
 import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBContract;
@@ -31,11 +32,11 @@ import kazmina.testapp.translator.languages.LanguagesAdapter;
  * фрагмент для отображения списка доступных языков
  */
 
-public class ChangeLanguageFragment extends Fragment implements AdapterView.OnItemClickListener, LanguagesHolder {
+public class ChangeLanguageFragment extends Fragment implements  LanguagesHolder {
     private String mCurrentLangCode;
     private String TAG = "ChangeLanguageFragment";
     private int mTargetView;
-    private LanguageListener mListener;
+    private FragmentCommunicator mListener;
     private DBProvider mDBProvider;
     private DBNotificationManager mDBNotificationManager;
     RecyclerView mRecyclerViewLangs;
@@ -64,9 +65,9 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
         mDBNotificationManager = DBContainer.getNotificationInstance(context);
         mDBNotificationManager.addListener(mDbListener);
         try {
-            mListener = (LanguageListener) context;
+            mListener = (FragmentCommunicator) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement LanguagesHolder");
+            throw new ClassCastException(context.toString() + " must implement FragmentCommunicator");
         }
     }
 
@@ -103,7 +104,7 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
                             Log.d(TAG, "" + e.getMessage());
                         }
                         mDBProvider.setLanguageTimeStamp(selectedLangId, new Date());
-                        mListener.changeLanguage(mTargetView, selectedLangValue, selectedLangTitle);
+                        mListener.onLangSelected(mTargetView, selectedLangValue, selectedLangTitle);
                     }
 
                     @Override public void onLongItemClick(View view, int position) {
@@ -114,23 +115,6 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
         mRecyclerViewLangs.setAdapter(null);
         populateList();
         return  view;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String selectedLangValue = null;
-        String selectedLangTitle = null;
-        Integer selectedLangId = null;
-        try {
-            Cursor c = (Cursor) parent.getAdapter().getItem(position);
-            selectedLangTitle =  c.getString(c.getColumnIndex(DBContract.Languages.TITLE));
-            selectedLangValue = c.getString(c.getColumnIndex(DBContract.Languages.CODE));
-            selectedLangId = c.getInt(c.getColumnIndex(DBContract.Languages.ID));
-        }catch (Exception e){
-            Log.d(TAG, "" + e.getMessage());
-        }
-        mDBProvider.setLanguageTimeStamp(selectedLangId, new Date());
-        mListener.changeLanguage(mTargetView, selectedLangValue, selectedLangTitle);
     }
 
     private void populateList(){
