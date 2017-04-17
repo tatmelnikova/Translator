@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String mLangFromTitle = DEFAULT_LANG_FROM_TITLE;
     private String mLangToTitle = DEFAULT_LANG_TO_TITLE;
 
-
+    private View.OnClickListener mFragmentClickListener = null;
     private LanguagesUpdater mLanguagesUpdater = new LangsUpdater();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mBottomNavigationListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -89,12 +89,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case SHOW_HISTORY_FRAGMENT_TAG:
                     hideKeyboard();
                     active = HistoryFragment.getInstance();
+                    mFragmentClickListener = (View.OnClickListener)active;
                     break;
                 case TRANSLATE_FRAGMENT_TAG:
                     active = TranslateFragment.getInstance(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
+                    mFragmentClickListener = (View.OnClickListener) active;
                     break;
                 case SETTINGS_FRAGMENT_TAG:
                     hideKeyboard();
+                    mFragmentClickListener = null;
                     active = PreferenceFragment.getInstance();
                     break;
                 default:
@@ -104,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (activeFragmentTag.equals(TRANSLATE_FRAGMENT_TAG)) {
                 ((TranslateFragment)active).updateLangs(mLangFrom, mLangTo, mLangFromTitle, mLangToTitle);
                 if (active.isVisible())((TranslateFragment)active).refreshLangs();
+                mFragmentClickListener = (View.OnClickListener) active;
+            }else if (activeFragmentTag.equals(SHOW_HISTORY_FRAGMENT_TAG)){
+                mFragmentClickListener = (View.OnClickListener) active;
             }
         }
 
@@ -117,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void showLangsFragment(Integer viewID, String selectedLang){
         hideKeyboard();
+        mFragmentClickListener = null;
         ChangeLanguageFragment changeLanguageFragment =  ChangeLanguageFragment.getInstance(viewID, selectedLang);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -157,6 +164,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             default:
+                if (mFragmentClickListener != null){
+                    mFragmentClickListener.onClick(v);
+                    break;
+                }
                 break;
         }
     }

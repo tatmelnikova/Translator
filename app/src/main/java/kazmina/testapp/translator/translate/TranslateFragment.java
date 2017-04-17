@@ -26,7 +26,7 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
  * фрагмент основного окна перевода
  */
 
-public class TranslateFragment extends Fragment implements LanguagesHolder, TranslateResultHandler, APIErrorMessages{
+public class TranslateFragment extends Fragment implements LanguagesHolder, TranslateResultHandler, APIErrorMessages, View.OnClickListener{
     private TranslateWatcher mTranslateWatcher;
     private List<TranslateResultHandler> mResultHandlers = null;
     TranslateResult mTranslateResult = null;
@@ -41,6 +41,11 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     private SaveResultAction mSaveResultAction;
 
     private EditText mEditTextTranslate;
+
+    /*@todo
+    * восстанавливать фрагмент истории или настроек, если он был открытым
+    * добавить слушатель смены языков во фрагменте
+    * */
 
     @Nullable
     @Override
@@ -92,9 +97,6 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden){
-            //ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
-            //ListenFavoritesAction favoritesAction = new ListenFavoritesAction(getContext(), imageButton);
-            //favoritesAction.processResult(mTranslateText, mTranslateResult);
             refreshLangs();
         }
     }
@@ -215,5 +217,10 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         params.putString(LANG_TO_TITLE, langToTitle);
         translateFragment.setArguments(params);
         return translateFragment;
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }
