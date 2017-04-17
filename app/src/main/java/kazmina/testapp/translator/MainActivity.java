@@ -1,5 +1,6 @@
 package kazmina.testapp.translator;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import java.util.List;
 
@@ -64,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showFragment(String activeFragmentTag){
+        View langsView = findViewById(R.id.changeLangsContainer);
+        langsView.setVisibility(View.GONE);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         List<Fragment> allFragments = getSupportFragmentManager().getFragments();
@@ -101,27 +105,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ft.commit();
     }
 
-    private void showLangsView(Integer viewID, String selectedLang){
-        Bundle params = new Bundle();
-        params.putInt(TARGET_VIEW, viewID);
-        params.putString(SELECTED_LANG_VALUE, selectedLang);
-        ChangeLanguageFragment changeLanguageFragment = new ChangeLanguageFragment();
-        changeLanguageFragment.setArguments(params);
+    private void showLangsFragment(Integer viewID, String selectedLang){
+        ChangeLanguageFragment changeLanguageFragment =  ChangeLanguageFragment.getInstance(viewID, selectedLang);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.hide(fm.findFragmentByTag(TRANSLATE_FRAGMENT_TAG));
-        ft.add(R.id.fragmentContainer, changeLanguageFragment, CHANGE_LANG_FRAGMENT_TAG);
+        ft.add(R.id.changeLangsContainer, changeLanguageFragment, CHANGE_LANG_FRAGMENT_TAG);
         ft.commit();
+        hideKeyboard();
+        View langsView = findViewById(R.id.changeLangsContainer);
+        langsView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideKeyboard(){
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.langFrom:
-                showLangsView(R.id.langFrom, mLangFrom);
+                showLangsFragment(R.id.langFrom, mLangFrom);
                 break;
             case R.id.langTo:
-                showLangsView(R.id.langTo, mLangTo);
+                showLangsFragment(R.id.langTo, mLangTo);
                 break;
             case R.id.swapLang:
                 swapTranslateDirections();
