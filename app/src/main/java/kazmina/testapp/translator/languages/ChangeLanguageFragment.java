@@ -48,6 +48,15 @@ public class ChangeLanguageFragment extends Fragment implements AdapterView.OnIt
         }
     };
 
+
+    public static ChangeLanguageFragment getInstance(int viewID, String selectedLang){
+        Bundle params = new Bundle();
+        params.putInt(TARGET_VIEW, viewID);
+        params.putString(SELECTED_LANG_VALUE, selectedLang);
+        ChangeLanguageFragment changeLanguageFragment = new ChangeLanguageFragment();
+        changeLanguageFragment.setArguments(params);
+        return changeLanguageFragment;
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
