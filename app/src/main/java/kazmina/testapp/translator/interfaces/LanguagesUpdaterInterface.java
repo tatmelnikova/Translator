@@ -8,6 +8,6 @@ import kazmina.testapp.translator.retrofitModels.LanguageLocalisation;
  *
  */
 
-public interface LanguagesUpdater {
-    void update(Context context);
+public interface LanguagesUpdaterInterface {
+    void checkNeedUpdate(Context context);
 }

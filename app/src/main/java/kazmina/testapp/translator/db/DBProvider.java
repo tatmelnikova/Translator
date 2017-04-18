@@ -73,22 +73,6 @@ public class DBProvider {
         });
     }
 
-    public void getLanguages(final String locale, final ResultCallback<Cursor> callback){
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                final Cursor c = mDBBackend.getLanguages(locale);
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onFinished(c);
-                    }
-                });
-            }
-        });
-    }
-
-
     public void setLanguageTimeStamp(final Integer id, final Date date){
         mExecutor.execute(new Runnable() {
             @Override
@@ -112,17 +96,44 @@ public class DBProvider {
             }
         });
     }
-    public void updateLanguages(final String locale, final HashMap<String, String> languagesMap, final ResultCallback<Cursor> callback){
+
+    public void checkNeedUpdate(final String locale,  final Integer updateFrequency, final ResultCallback<String> callback ){
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final Cursor c = mDBBackend.updateLanguagesList(locale, languagesMap);
+                final Boolean needUpdate = mDBBackend.checkNeedUpdate(locale, updateFrequency);
+                    if (needUpdate) {
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onFinished(locale);
+                            }
+                        });
+                    }
+
+            }
+        });
+    }
+    public void updateLanguages(final String locale, final HashMap<String, String> languagesMap, final ResultCallback<Void> callback){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDBBackend.updateLanguagesList(locale, languagesMap);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onFinished(c);
+                        callback.onFinished(null);
                     }
                 });
+            }
+        });
+    }
+
+    public void setLocaleUpdated(final String locale){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDBBackend.setLocaleUpdated(locale);
             }
         });
     }

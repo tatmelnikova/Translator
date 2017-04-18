@@ -1,7 +1,6 @@
 package kazmina.testapp.translator;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import android.support.annotation.NonNull;
@@ -10,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -19,7 +17,7 @@ import java.util.List;
 
 import kazmina.testapp.translator.interfaces.FragmentTags;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
-import kazmina.testapp.translator.interfaces.LanguagesUpdater;
+import kazmina.testapp.translator.interfaces.LanguagesUpdaterInterface;
 import kazmina.testapp.translator.history.HistoryFragment;
 import kazmina.testapp.translator.languages.ChangeLanguageFragment;
 import kazmina.testapp.translator.preference.PreferenceFragment;
@@ -29,7 +27,7 @@ import kazmina.testapp.translator.utils.LangsUpdater;
 
 public class MainActivity extends AppCompatActivity implements LanguagesHolder,FragmentTags,  FragmentCommunicator {
     private final String TAG = "MainActivity";
-    private LanguagesUpdater mLanguagesUpdater = new LangsUpdater();
+    private LanguagesUpdaterInterface mLanguagesUpdater = new LangsUpdater();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mBottomNavigationListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -57,8 +55,9 @@ public class MainActivity extends AppCompatActivity implements LanguagesHolder,F
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
-        mLanguagesUpdater.update(this);
-        showFragment(TRANSLATE_FRAGMENT_TAG);
+        mLanguagesUpdater.checkNeedUpdate(this);
+
+        if (savedInstanceState == null) showFragment(TRANSLATE_FRAGMENT_TAG);
     }
 
     private void showFragment(String activeFragmentTag){
