@@ -5,10 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
-import android.text.format.Time;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -120,6 +120,13 @@ public class DBBackend implements DBContract {
     }
 
 
+    /**
+     * ищет запись в таблице избранного по переданному тексту и направлению перевода
+     * @param text - текст
+     * @param langFrom - язык, с которого переводим
+     * @param langTo - язык, на который переводим
+     * @return ID найденной записи в таблице избранного, null если ничего не найдено
+     */
     Integer getFavoritesID(String text, String langFrom, String langTo){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         Integer inFav = null;
@@ -145,48 +152,25 @@ public class DBBackend implements DBContract {
     }
 
 
-    /*
-    * select languages._id, code, title, locale, used
-        from languages
-        left join (Select _id, timestamp as used From languages order by timestamp desc limit 3) as usedlangs
-        on usedlangs._id=languages._id
-        where locale="ru"
-        order by used isnull asc, title asc
-    * */
-    Cursor getLanguages(String locale){
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        Cursor c = null;
-        try{
-            String[] columns = new String[]{Languages.ID, Languages.CODE, Languages.TITLE};
-            String orderBy = Languages.TITLE +" ASC";
-            String where = Languages.LOCALE +" = ?";
-            String args[] = new String[]{locale};
-            c = db.query(LANGUAGES, columns, where, args, null, null, orderBy);
-            if (c != null) c.moveToFirst();
-        }catch (Exception e){
-            Log.d(TAG, "" + e.getMessage());
-        }
-        return c;
-    }
-
+    /**
+     * выборка списка языков для переданной локали
+     * возвращает  продублированные записи последних использованных языков + все языки
+     * например:
+     * ID   CODE    TITLE       LOCALE  LAST_USED
+     * 1    en      Английский  ru      10
+     * 2    fr      Французский ru      9
+     * 3    al      Албанский   ru      null
+     * 4    en      Английский  ru      null
+     * 5    fr      Французский ru      null
+     * @param locale - код локализации для языков
+     * @param used - количество последних использованных языков
+     * @return курсор
+     */
     Cursor getLanguagesWithUsed(String locale, Integer used){
         if (used == null) used = 3;
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         Cursor c = null;
         try {
-            /*String sql = "SELECT " +
-            LANGUAGES + "." + Languages.ID + ", " +
-                    LANGUAGES + "." + Languages.CODE + ", " +
-                    LANGUAGES + "." + Languages.TITLE + ", " +
-                    LANGUAGES + "." + Languages.LOCALE + ", " +
-                    LANGUAGES + "." + Languages.LAST_USED +
-                    " FROM " + LANGUAGES +
-                    " LEFT JOIN  (SELECT " + LANGUAGES + "." + Languages.ID   +", " + LANGUAGES + "."+Languages.LAST_USED +
-                    " FROM " + LANGUAGES + " ORDER BY " +  LANGUAGES + "."+Languages.LAST_USED + " LIMIT " + String.valueOf(used) + ")" +
-                    " as usedlangs ON usedlangs." + Languages.ID + "=" + LANGUAGES + "." + Languages.ID +
-                    " WHERE locale = ?" +
-                    " ORDER BY " + LANGUAGES  + "."+ Languages.LAST_USED + " isnull asc, " + Languages.TITLE + " asc";
-                    */
             String sql =
                     "SELECT * FROM " +
                         "(" +
@@ -213,8 +197,9 @@ public class DBBackend implements DBContract {
                         ")" +
                     " ORDER BY " + Languages.LAST_USED + " desc, " + Languages.TITLE + " asc "
                     ;
-
-            //c = db.rawQuery(sql, new String[]{locale});
+            //если биндить параметры в rawQuery, то итоговый запрос собирается неверно, LIMIT
+            //накладывается не на подзапрос, а применяется к результатам внешнего запроса
+            //поэтому параметры будут сразу в String sql, не менять!
             c = db.rawQuery(sql,null);
         }catch (Exception e){
             Log.d(TAG, "" + e.getMessage());
@@ -222,12 +207,17 @@ public class DBBackend implements DBContract {
         return c;
     }
 
+    /**
+     * обновляет дату последнего использования языка
+     * @param id - ID языка
+     * @param date - дата последнего использования
+     */
     void setLanguageTimeStamp(Integer id, Date date){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         try {
             db.beginTransaction();
             ContentValues values = new ContentValues();
-            values.put(Languages.LAST_USED, date.getTime());
+            values.put(Languages.LAST_USED, date.getTime() / 1000); //время в миллисекундах нужно привести к секундам
             db.update(LANGUAGES, values, Languages.ID + " = ?",
                     new String[] { String.valueOf(id) });
             db.setTransactionSuccessful();
@@ -236,7 +226,6 @@ public class DBBackend implements DBContract {
         }finally {
             db.endTransaction();
         }
-        showLangs();
     }
     /**
      * добавляет результат перевода в историю
@@ -396,9 +385,47 @@ public class DBBackend implements DBContract {
         db.endTransaction();
     }
 
-    Cursor updateLanguagesList(String locale, HashMap<String, String> languagesMap){
+    /**
+     * проверяет, пора ли обновлять список языков для заданной локали
+     * @param locale - код локали
+     * @param updateFrequency - частота обновления в днях
+     * @return true, если локаль нужно обновить
+     */
+    Boolean checkNeedUpdate( String locale, Integer updateFrequency){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        Cursor c = null;
+
+        Boolean needUpdate = true;
+        Cursor cursor = null;
+        try{
+            db.beginTransaction();
+            Calendar c = Calendar.getInstance();
+            c.add(Calendar.DATE, -updateFrequency);
+            long shouldBeUpdatedAfter = c.getTimeInMillis() / 1000;
+            String[] columns = new String[]{Updates.ID, Updates.LOCALE, Updates.UPDATED};
+            String where = Languages.LOCALE + " = ? AND " + Updates.UPDATED + " > ?";
+            cursor = db.query(UPDATES, columns, where, new String[]{locale, String.valueOf(shouldBeUpdatedAfter)}, null, null, null);
+
+            if (cursor.moveToFirst()){
+               needUpdate = false;
+            }
+            db.setTransactionSuccessful();
+        }catch (Exception e){
+            Log.d(TAG, "" + e.getMessage());
+        }finally {
+            if (cursor != null)cursor.close();
+            db.endTransaction();
+        }
+        return needUpdate;
+    }
+
+    /**
+     * обновляет список языков для указанной локали
+     * @param locale локаль
+     * @param languagesMap список языков, полученный от АПИ переводчика
+     */
+    void updateLanguagesList(String locale, HashMap<String, String> languagesMap){
+        showUpdates();
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
         try{
             db.beginTransaction();
             List<String> langCodes = new ArrayList<>();
@@ -416,10 +443,56 @@ public class DBBackend implements DBContract {
             db.endTransaction();
         }
         addLanguages(locale, languagesMap);
-        return c;
     }
 
-    void addLanguages(String locale, HashMap<String, String> languagesMap){
+    /**
+     * обновляет дату обновления локали для существующей записи либо вставляет новую запись
+     * @param locale код локали
+     */
+     void setLocaleUpdated(String locale){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        try {
+            db.beginTransaction();
+            String updateTime = String.valueOf(new Date().getTime()/1000);
+            ContentValues values = new ContentValues();
+            values.put(Updates.UPDATED, updateTime);
+            int u = db.update(UPDATES, values, "locale=?", new String[]{locale});
+            if (u == 0) {
+                values.put(Updates.LOCALE, locale);
+                db.insertWithOnConflict(UPDATES, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            }
+            db.setTransactionSuccessful();
+        }catch (Exception e){
+            Log.d(TAG, "" + e.getMessage());
+        }finally {
+            db.endTransaction();
+        }
+        showUpdates();
+    }
+    private void showUpdates(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        Cursor c = null;
+        try {
+            db.beginTransaction();
+            c = db.rawQuery("SELECT * FROM " + UPDATES, null);
+            while (c.moveToNext()){
+                Log.d("0", c.getString(0));
+                Log.d("1", c.getString(1));
+                Log.d("2", c.getString(2));
+            }
+        }catch (Exception e){
+
+        }finally {
+            if (c!=null) c.close();
+            db.endTransaction();
+        }
+    }
+
+    /** сохраняет переданные языки для указанной локали
+     * @param locale код локали
+     * @param languagesMap языки в формате en => Английский
+     */
+    private void addLanguages(String locale, HashMap<String, String> languagesMap){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.beginTransaction();
         try{
@@ -428,12 +501,7 @@ public class DBBackend implements DBContract {
                 values.put(Languages.CODE, langEntry.getKey());
                 values.put(Languages.TITLE, langEntry.getValue());
                 values.put(Languages.LOCALE, locale);
-                long insertId = db.insertWithOnConflict(LANGUAGES, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-                if (insertId >= 0) {
-                   // Log.d(TAG, "added " + values.toString());
-                }else{
-                   // Log.d(TAG, "failed " + values.toString());
-                }
+                db.insertWithOnConflict(LANGUAGES, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             }
             db.setTransactionSuccessful();
         }catch (Exception e){
@@ -441,8 +509,8 @@ public class DBBackend implements DBContract {
         }finally {
             db.endTransaction();
         }
-
     }
+
     /**
      * класс для проверки валидности результата перевода
      */
@@ -461,9 +529,6 @@ public class DBBackend implements DBContract {
                     || isEmpty(translateResult.getPlainText())
                 ){
                 result = false;
-                //Log.d(TAG, "result is empty");
-            }else{
-               // Log.d(TAG, "result is not empty");
             }
             return result;
         }
