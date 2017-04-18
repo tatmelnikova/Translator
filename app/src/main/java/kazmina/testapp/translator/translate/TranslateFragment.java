@@ -74,6 +74,8 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         to.setOnClickListener(this);
         View rotate = view.findViewById(R.id.rotate);
         rotate.setOnClickListener(this);
+        View swapLangs = view.findViewById(R.id.swapLang);
+        swapLangs.setOnClickListener(this);
         Bundle args = getArguments();
         if (savedInstanceState == null && args != null) {
             saveArguments(args);

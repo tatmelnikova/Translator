@@ -50,17 +50,6 @@ public class TranslateWatcher implements TextWatcher{
         mTranslateDirection = langFrom.concat(mDelimeter).concat(langTo);
     }
 
-
-    TranslateResult getTranslateResult(){
-        return mTranslateResult;
-    }
-
-    String getTranslateText(){
-        return mTranslateText;
-    }
-    public void setTranslateDirection(String direction){
-        mTranslateDirection = direction;
-    }
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
