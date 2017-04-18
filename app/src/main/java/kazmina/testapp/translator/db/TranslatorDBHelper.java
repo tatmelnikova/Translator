@@ -88,7 +88,7 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
                         Languages.CODE + " STRING NOT NULL, " +
                         Languages.TITLE + " STRING NOT NULL, " +
                         Languages.LOCALE + " STRING NOT NULL, " +
-                        Languages.LAST_USED + " STRING DEFAULT NULL, " +
+                        Languages.LAST_USED + " INTEGER DEFAULT NULL, " +
                         "CONSTRAINT " + Languages.UNIQUE_LOC +" UNIQUE ( " + Languages.LOCALE +", " + Languages.CODE + ")" +
         ")";
 
@@ -96,6 +96,12 @@ public class TranslatorDBHelper extends SQLiteOpenHelper implements DBContract{
         * CREATE TABLE languages(_id INTEGER PRIMARY KEY AUTOINCREMENT, code STRING NOT NULL, title STRING NOT NULL, locale STRING NOT NULL, last_used STRING DEFAULT NULL, CONSTRAINT unique_loc UNIQUE ( locale, code))
         * */
         db.execSQL(langsSql);
+
+        String updatesSql = "CREATE TABLE " + UPDATES + "(" +
+                Updates.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                Updates.LOCALE + " STRING NOT NULL UNIQUE, " +
+                Updates.UPDATED + " STRING NOT NULL)";
+        db.execSQL(updatesSql);
         loadLanguages();
     }
 
