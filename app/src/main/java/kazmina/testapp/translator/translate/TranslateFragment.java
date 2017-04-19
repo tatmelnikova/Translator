@@ -188,10 +188,10 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
                 swapTranslateDirection();
             }else{
                 mLangTo = langValue;
-                mLangFromTitle = langTitle;
+                mLangToTitle = langTitle;
             }
         }
-        showTranslateDirection();
+        refreshLangs();
     }
     @Override
     public boolean processResult(String text, TranslateResult translateResult) {
@@ -233,7 +233,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     public void refreshLangs(){
         showTranslateDirection();
         setWatcher();
-        mEditTextTranslate.setText(mEditTextTranslate.getText());
+        mEditTextTranslate.setText(mTranslateText);
     }
 
     @Override
@@ -287,5 +287,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         tmp = mLangFromTitle;
         mLangFromTitle = mLangToTitle;
         mLangToTitle = tmp;
+        if (mTranslateResult != null) mTranslateText = mTranslateResult.getPlainText();
+        refreshLangs();
     }
 }
