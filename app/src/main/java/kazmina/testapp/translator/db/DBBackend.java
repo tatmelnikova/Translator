@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -536,7 +538,7 @@ public class DBBackend implements DBContract {
         private boolean isEmpty(String text){
             boolean isEmpty = true;
             if (text != null){
-               if (text.matches("\\S+")) isEmpty = false;
+               if (!StringUtils.isEmpty(text)) isEmpty = false;
             }
             return isEmpty;
         }
