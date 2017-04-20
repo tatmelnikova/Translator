@@ -38,30 +38,28 @@
             android:layout_weight="2"
             android:onClick="onClick"/>
     </LinearLayout>
-    <RelativeLayout
+    <LinearLayout
         style="@style/contentWrapper"
-        android:orientation="vertical"
-        android:layout_weight="1"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="match_parent">
 
         <EditText
             android:id="@+id/editTextInput"
             style="@style/editTextDefault"
-            android:background="@drawable/edit_text_selector"
-            android:hint="@string/translate_hint"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_alignParentTop="true"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
+            android:layout_weight="0.5"
+            android:background="@drawable/edit_text_selector"
             android:ems="10"
+            android:hint="@string/translate_hint"
             android:inputType="textMultiLine"/>
         <RelativeLayout
             android:id="@+id/resultWrapper"
-            android:layout_width="match_parent"
-            android:layout_below="@+id/editTextInput"
-            android:layout_alignParentBottom="true"
-            android:layout_height="0dp">
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="match_parent">
             <TextView
                 android:id="@+id/textViewResult"
                 android:layout_width="match_parent"
@@ -108,5 +106,5 @@
                 />
         </RelativeLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>
