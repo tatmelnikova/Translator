@@ -23,7 +23,6 @@ import kazmina.testapp.translator.FragmentCommunicator;
 import kazmina.testapp.translator.R;
 
 import kazmina.testapp.translator.api.APIErrorMessages;
-import kazmina.testapp.translator.interfaces.LanguageListener;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
@@ -47,11 +46,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
 
     private EditText mEditTextTranslate;
     private FragmentCommunicator mListener;
-
-    /*@todo
-    * восстанавливать фрагмент истории или настроек, если он был открытым
-    * добавить слушатель смены языков во фрагменте
-    * */
+    TranslateQueryInterface mTranslateQuery;
 
     @Override
     public void onAttach(Context context) {
@@ -90,6 +85,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
+        mTranslateQuery = new TranslateQueryImplementation(this);
         showTranslateDirection();
         ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
         TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
@@ -123,6 +119,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden){
+            mTranslateQuery = new TranslateQueryImplementation(this);
             refreshLangs();
         }
     }
@@ -130,8 +127,9 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     @Override
     public void onPause() {
         super.onPause();
+        mTranslateQuery.cancel();
+        mTranslateQuery = null;
         Log.d(TAG, "onPause");
-        mSaveResultAction.setSaveImmediate(true);
         mResultHandlers = null;
     }
 
@@ -154,7 +152,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     private void setWatcher(){
         if (mEditTextTranslate != null) {
             mEditTextTranslate.removeTextChangedListener(mTranslateWatcher);
-            mTranslateWatcher = new TranslateWatcher(mLangFrom, mLangTo, this);
+            mTranslateWatcher = new TranslateWatcher(mLangFrom, mLangTo, mTranslateQuery);
             mEditTextTranslate.addTextChangedListener(mTranslateWatcher);
         }
     }
