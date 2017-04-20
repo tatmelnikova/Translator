@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 /**
- * Created by user on 31/07/2016.
+ * обертка для асинхронных запросов к БД
  */
 public class DBProvider {
 
@@ -30,7 +30,11 @@ public class DBProvider {
     DBProvider(Context context) {
         mDBBackend = new DBBackend(context);
         mDBNotificationManager = DBContainer.getNotificationInstance(context);
-        mExecutor = new CustomExecutor();
+        int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
+        final int corePoolSize = NUMBER_OF_CORES * 2;
+        final int maxPoolSize = NUMBER_OF_CORES * 2;
+        final long keepAliveTime = 100;
+        mExecutor = new CustomExecutor(corePoolSize, maxPoolSize, keepAliveTime);
     }
 
     @VisibleForTesting
@@ -227,10 +231,11 @@ public class DBProvider {
             }
         });
     }
-    // TODO: make me multi-threaded!
+
     class CustomExecutor extends ThreadPoolExecutor {
-        CustomExecutor() {
-            super(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+        CustomExecutor(int corePoolSize, int maxPoolSize, long keepAliveTime ) {
+            super(corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         }
+        //нужен shutdown?
     }
 }
