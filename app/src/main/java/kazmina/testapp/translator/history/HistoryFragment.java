@@ -1,5 +1,6 @@
 package kazmina.testapp.translator.history;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -18,7 +19,7 @@ import java.util.List;
 import kazmina.testapp.translator.R;
 
 /**
- * @todo: header
+ * фрагмент с TabLayout,  в который будут подгружаться фрагменты истории переводов  и фрагмент избранного
  */
 
 public class HistoryFragment extends Fragment implements View.OnClickListener{
@@ -33,6 +34,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener{
         switch (v.getId()){
             case R.id.imageButtonDelete:
                 deleteHistoryList();
+                //getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 break;
             default:
                 break;
@@ -54,6 +56,8 @@ public class HistoryFragment extends Fragment implements View.OnClickListener{
         mViewPagerAdapter.addFragment(new FavoritesListFragment(), getString(R.string.tab_favorites));
         mViewPager.setAdapter(mViewPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
+        View deleteButton = view.findViewById(R.id.imageButtonDelete);
+        deleteButton.setOnClickListener(this);
         return view;
     }
 
