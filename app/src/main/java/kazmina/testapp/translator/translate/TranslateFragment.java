@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,7 +94,9 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
         TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
         TextView copyrightTextView = (TextView) mView.findViewById(R.id.copyright);
+        copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
         ShowResultAction showResultAction = new ShowResultAction(resultTextView, copyrightTextView);
+
 
         ListenFavoritesAction listenFavoritesAction = new ListenFavoritesAction(getContext(), imageButton);
         mSaveResultAction = new SaveResultAction(getContext());
@@ -173,8 +176,14 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
             mLangToTitle = params.getString(LANG_TO_TITLE);
     }
 
+    /**
+     * @param viewId - ID кнопки, которая была нажата для смены языка (R.id.langFromили R.id.langTo)
+     * @param langValue - код языка
+     * @param langTitle - локализованное название языка
+     */
     public void setLanguage(int viewId, String langValue, String langTitle){
-
+        //проверить второй установленный язык, если для языка 1 уже установлен русский, и для языка
+        //2 передан тоже русский, то поменять значения языков местами
         if (viewId == R.id.langFrom){
             if (langValue.equals(mLangTo)){
                 swapTranslateDirection();
@@ -191,6 +200,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
                 mLangToTitle = langTitle;
             }
         }
+        //после установки языка обновить вьюшки с их отображением
         refreshLangs();
     }
     @Override
@@ -280,14 +290,36 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         }
     }
 
+    /**
+     * меняет направление перевода на обратное
+     */
     private void swapTranslateDirection(){
-        String tmp = mLangFrom;
-        mLangFrom = mLangTo;
-        mLangTo = tmp;
-        tmp = mLangFromTitle;
-        mLangFromTitle = mLangToTitle;
-        mLangToTitle = tmp;
-        if (mTranslateResult != null) mTranslateText = mTranslateResult.getPlainText();
-        refreshLangs();
+        //если в поле ввода текста для перевода ничего нет, то просто поменяем языки перевода местами
+        if (mEditTextTranslate.getText() == null ) {
+            String tmp = mLangFrom;
+            mLangFrom = mLangTo;
+            mLangTo = tmp;
+            tmp = mLangFromTitle;
+            mLangFromTitle = mLangToTitle;
+            mLangToTitle = tmp;
+            refreshLangs();
+        }else{
+            //иначе проверим, есть ли уже результат перевода для введенного текста
+            //если результата перевода еще нет, то не будем делать ничего
+            //Яндекс.Переводчик работает сейчас именно так. варианты - поставить смену языков в
+            // очередь дожидаться, пока результат перевода появится? тоже не очень красиво
+            if (mTranslateResult != null) {
+                String tmp = mLangFrom;
+                mLangFrom = mLangTo;
+                mLangTo = tmp;
+                tmp = mLangFromTitle;
+                mLangFromTitle = mLangToTitle;
+                mLangToTitle = tmp;
+                mTranslateText = mTranslateResult.getPlainText();
+                processResult(mTranslateText, null);
+                refreshLangs();
+            }
+        }
+
     }
 }
