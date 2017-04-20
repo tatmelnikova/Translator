@@ -119,8 +119,7 @@ public class ChangeLanguageFragment extends Fragment implements  LanguagesHolder
 
     private void populateList(){
         mLocale = Locale.getDefault().getLanguage();
-        Cursor c = null;
-        LanguagesCursorAdapter adapter = new LanguagesCursorAdapter(R.layout.lang_list_item, c, mCurrentLangCode);
+        LanguagesCursorAdapter adapter = new LanguagesCursorAdapter(R.layout.lang_list_item, null, mCurrentLangCode);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerViewLangs.setLayoutManager(llm);
