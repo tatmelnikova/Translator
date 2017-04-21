@@ -1,4 +1,4 @@
-package kazmina.testapp.translator.db;
+package kazmina.testapp.translator;
 
 import android.database.Cursor;
 
