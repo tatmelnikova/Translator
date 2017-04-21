@@ -1,6 +1,4 @@
-package kazmina.testapp.translator.api;
-
-import kazmina.testapp.translator.R;
+package kazmina.testapp.translator.retrofitModels;
 
 /**
  * класс для обработки ошибок перевода

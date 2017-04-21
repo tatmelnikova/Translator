@@ -1,4 +1,4 @@
-package kazmina.testapp.translator.api;
+package kazmina.testapp.translator.retrofitModels;
 
 import kazmina.testapp.translator.R;
 
