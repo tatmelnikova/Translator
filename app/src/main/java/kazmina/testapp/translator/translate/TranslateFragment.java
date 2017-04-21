@@ -18,19 +18,22 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import kazmina.testapp.translator.FragmentCommunicator;
 import kazmina.testapp.translator.R;
 
-import kazmina.testapp.translator.api.APIErrorMessages;
+import kazmina.testapp.translator.retrofitModels.APIErrorMessages;
 import kazmina.testapp.translator.interfaces.LanguagesHolder;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
+import kazmina.testapp.translator.utils.CommonUtils;
 
 /**
  * фрагмент основного окна перевода
  */
 
-public class TranslateFragment extends Fragment implements LanguagesHolder, TranslateResultHandler, APIErrorMessages, View.OnClickListener{
+public class TranslateFragment extends Fragment implements LanguagesHolder, TranslateResultHandler, TextChangedListener, APIErrorMessages, View.OnClickListener{
     private TranslateWatcher mTranslateWatcher;
     private List<TranslateResultHandler> mResultHandlers = null;
     TranslateResult mTranslateResult = null;
@@ -47,7 +50,9 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     private EditText mEditTextTranslate;
     private FragmentCommunicator mListener;
     TranslateQueryInterface mTranslateQuery;
-
+    private final String DELIMETER = "-";
+    private final long DELAY = 500;
+    private Timer mTimer = new Timer();
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -91,9 +96,9 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
         TextView copyrightTextView = (TextView) mView.findViewById(R.id.copyright);
         copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+
         ShowResultAction showResultAction = new ShowResultAction(resultTextView, copyrightTextView);
-
-
         ListenFavoritesAction listenFavoritesAction = new ListenFavoritesAction(getContext(), imageButton);
         mSaveResultAction = new SaveResultAction(getContext());
         mResultHandlers = new ArrayList<>();
@@ -119,7 +124,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden){
-            mTranslateQuery = new TranslateQueryImplementation(this);
+            //mTranslateQuery = new TranslateQueryImplementation(this);
             refreshLangs();
         }
     }
@@ -152,7 +157,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     private void setWatcher(){
         if (mEditTextTranslate != null) {
             mEditTextTranslate.removeTextChangedListener(mTranslateWatcher);
-            mTranslateWatcher = new TranslateWatcher(mLangFrom, mLangTo, mTranslateQuery);
+            mTranslateWatcher = new TranslateWatcher(this);
             mEditTextTranslate.addTextChangedListener(mTranslateWatcher);
         }
     }
@@ -240,8 +245,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
 
     public void refreshLangs(){
         showTranslateDirection();
-        setWatcher();
-        mEditTextTranslate.setText(mTranslateText);
+        if (mTranslateText != null) runTranslate(mTranslateText);
     }
 
     @Override
@@ -293,7 +297,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
      */
     private void swapTranslateDirection(){
         //если в поле ввода текста для перевода ничего нет, то просто поменяем языки перевода местами
-        if (mEditTextTranslate.getText() == null ) {
+        if (mTranslateText == null ) {
             String tmp = mLangFrom;
             mLangFrom = mLangTo;
             mLangTo = tmp;
@@ -314,10 +318,36 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
                 mLangFromTitle = mLangToTitle;
                 mLangToTitle = tmp;
                 mTranslateText = mTranslateResult.getPlainText();
-                processResult(mTranslateText, null);
+                mEditTextTranslate.setText(mTranslateText);
                 refreshLangs();
             }
         }
 
+    }
+
+    public void runTranslate(String text){
+        String translateDirection = mLangFrom.concat(DELIMETER).concat(mLangTo);
+        mTranslateQuery.runTranslate(text, translateDirection);
+    }
+
+    @Override
+    public void onTextChanged(final String text) {
+        mTranslateText = text;
+        if (CommonUtils.stringIsEmpty(text)) {
+            mTimer.cancel();
+            processResult(null, null);
+        }else{
+            mTimer.cancel();
+            mTimer = new Timer();
+            mTimer.schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            runTranslate(text);
+                        }
+                    },
+                    DELAY
+            );
+        }
     }
 }

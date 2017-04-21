@@ -13,8 +13,8 @@ import org.robolectric.annotation.Config;
 
 import kazmina.testapp.translator.db.DBBackend;
 import kazmina.testapp.translator.db.DBContract;
-import kazmina.testapp.translator.db.DBUtils;
 import kazmina.testapp.translator.db.TranslatorDBHelper;
+import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -65,12 +65,16 @@ public class DBBackendTest implements DBContract {
         Integer favID = c.getInt(c.getColumnIndex(History.FAV_ID));
         assertNotNull(favID);
     }
-
+    @Test
     public void testCopyHistoryItemToFavorites(){
         dbBackend.insertHistoryItem("мама", "mother", "ru", "en");
         dbBackend.copyHistoryItemToFavorites(1);
         Assert.assertEquals(1, getCount(db, FAVORITES));
 
+    }
+
+    public void testTranslateResultIsValidForSave(){
+        TranslateResult result = new TranslateResult();
     }
     private int getCount(SQLiteDatabase db, String table) {
         return DBUtils.getResultLongAndClose(

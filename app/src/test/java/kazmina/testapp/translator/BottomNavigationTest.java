@@ -12,6 +12,7 @@ import org.robolectric.annotation.Config;
 
 import kazmina.testapp.translator.history.HistoryFragment;
 import kazmina.testapp.translator.interfaces.FragmentTags;
+import kazmina.testapp.translator.preference.PreferenceFragment;
 import kazmina.testapp.translator.translate.TranslateFragment;
 
 import static junit.framework.Assert.assertNotNull;
@@ -43,5 +44,15 @@ public class BottomNavigationTest implements FragmentTags{
         Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag(TRANSLATE_FRAGMENT_TAG);
         Log.d("startTranslateFragment", fragment.toString());
         assertTrue(fragment instanceof TranslateFragment);
+    }
+    @Test
+    public void clickingSettings_shouldStartSettingsFragment(){
+        MainActivity activity = Robolectric.buildActivity(MainActivity.class).create().start().resume().get();
+        activity.findViewById(R.id.navigation_settings).performClick();
+        activity.getSupportFragmentManager().executePendingTransactions();
+        Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag(SETTINGS_FRAGMENT_TAG);
+        assertNotNull(fragment);
+        assertTrue(fragment instanceof PreferenceFragment);
+        assertNotNull(fragment.getView());
     }
 }

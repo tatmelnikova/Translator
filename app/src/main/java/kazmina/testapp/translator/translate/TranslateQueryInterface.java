@@ -1,5 +1,7 @@
 package kazmina.testapp.translator.translate;
 
+import android.content.Context;
+
 /**
  *
  */

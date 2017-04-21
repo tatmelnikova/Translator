@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
+import kazmina.testapp.translator.utils.CommonUtils;
 
 /**
  * апи базы данных
@@ -30,17 +31,6 @@ public class DBBackend implements DBContract {
     }
     public DBBackend(TranslatorDBHelper dbOpenHelper) {
         mDBHelper = dbOpenHelper;
-    }
-    public Cursor getTranslateHistory() {
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        String[] columns = new String[] { History.ID , History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO};
-        String orderBy = History.ID + " DESC";
-        Cursor c = db.query(HISTORY, columns,
-                null, null, null, null, orderBy);
-        if (c != null) {
-            c.moveToFirst();
-        }
-        return c;
     }
 
     /**
@@ -69,27 +59,7 @@ public class DBBackend implements DBContract {
         }finally {
             db.endTransaction();
         }
-        //showLangs();
         return c;
-    }
-
-
-    public void showFav(){
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        db.beginTransaction();
-        String sql = "SeLECT * FROM " + FAVORITES;
-        Cursor cursor = db.rawQuery(sql, null);
-        Log.d(TAG, "count=" + cursor.getCount());
-        while (cursor.moveToNext()) {
-            int i = 0;
-            while (i < cursor.getColumnCount()) {
-                Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
-                i++;
-            }
-
-        }
-        cursor.close();
-        db.endTransaction();
     }
 
     /**
@@ -325,41 +295,6 @@ public class DBBackend implements DBContract {
         }
     }
 
-    public void showHistory(){
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        db.beginTransaction();
-        String sql = "SeLECT * FROM " + HISTORY;
-        Cursor cursor = db.rawQuery(sql, null);
-        Log.d(TAG, "count=" + cursor.getCount());
-        while (cursor.moveToNext()) {
-            int i = 0;
-            while (i < cursor.getColumnCount()) {
-                Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
-                i++;
-            }
-
-        }
-        cursor.close();
-        db.endTransaction();
-    }
-
-    public void showLangs(){
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        db.beginTransaction();
-        String sql = "SeLECT * FROM " + LANGUAGES;
-        Cursor cursor = db.rawQuery(sql, null);
-        Log.d(TAG, "langs count=" + cursor.getCount());
-        while (cursor.moveToNext()) {
-            int i = 0;
-            while (i < cursor.getColumnCount()) {
-                Log.d(TAG, String.valueOf(i) + " = " + cursor.getString(i));
-                i++;
-            }
-
-        }
-        cursor.close();
-        db.endTransaction();
-    }
     boolean resultIsValid(String text, TranslateResult translateResult){
         ResultChecker checker = new ResultChecker();
         return checker.resultIsValid(text, translateResult);
@@ -426,25 +361,33 @@ public class DBBackend implements DBContract {
      * @param languagesMap список языков, полученный от АПИ переводчика
      */
     void updateLanguagesList(String locale, HashMap<String, String> languagesMap){
-        showUpdates();
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         try{
             db.beginTransaction();
+            //сначала удалить те языки, которых нет в списке языков, полученном от API
             List<String> langCodes = new ArrayList<>();
             for(String langCode : languagesMap.keySet()){
                 langCodes.add(langCode);
             }
             String codes = "\"" + TextUtils.join("\",\"", langCodes) + "\"";
-            //Log.d(TAG, codes);
             String where = Languages.LOCALE +" =  \""+ locale+ "\"  AND CODE NOT IN ( "+ codes +" )";
             db.delete(LANGUAGES, where, null);
+            //вставить полученный список языков в базу
+            //дубли вставляться не будут, т.к. в таблице используется составной уникальный ключ по
+            //Languages.LOCALE и Languages.CODE
+            for(Map.Entry<String, String> langEntry : languagesMap.entrySet()) {
+                ContentValues values = new ContentValues();
+                values.put(Languages.CODE, langEntry.getKey());
+                values.put(Languages.TITLE, langEntry.getValue());
+                values.put(Languages.LOCALE, locale);
+                db.insertWithOnConflict(LANGUAGES, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            }
             db.setTransactionSuccessful();
         }catch (Exception e){
             Log.d(TAG, "" + e.getMessage());
         }finally {
             db.endTransaction();
         }
-        addLanguages(locale, languagesMap);
     }
 
     /**
@@ -469,48 +412,6 @@ public class DBBackend implements DBContract {
         }finally {
             db.endTransaction();
         }
-        showUpdates();
-    }
-    private void showUpdates(){
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        Cursor c = null;
-        try {
-            db.beginTransaction();
-            c = db.rawQuery("SELECT * FROM " + UPDATES, null);
-            while (c.moveToNext()){
-                Log.d("0", c.getString(0));
-                Log.d("1", c.getString(1));
-                Log.d("2", c.getString(2));
-            }
-        }catch (Exception e){
-
-        }finally {
-            if (c!=null) c.close();
-            db.endTransaction();
-        }
-    }
-
-    /** сохраняет переданные языки для указанной локали
-     * @param locale код локали
-     * @param languagesMap языки в формате en => Английский
-     */
-    private void addLanguages(String locale, HashMap<String, String> languagesMap){
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        db.beginTransaction();
-        try{
-            for(Map.Entry<String, String> langEntry : languagesMap.entrySet()) {
-                ContentValues values = new ContentValues();
-                values.put(Languages.CODE, langEntry.getKey());
-                values.put(Languages.TITLE, langEntry.getValue());
-                values.put(Languages.LOCALE, locale);
-                db.insertWithOnConflict(LANGUAGES, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-            }
-            db.setTransactionSuccessful();
-        }catch (Exception e){
-            Log.d(TAG, "" + e.getMessage());
-        }finally {
-            db.endTransaction();
-        }
     }
 
     /**
@@ -526,22 +427,15 @@ public class DBBackend implements DBContract {
         boolean resultHasText(String text, TranslateResult translateResult){
             boolean result = true;
             if (
-                    isEmpty(text)
-                    || isEmpty(translateResult.getLang())
-                    || isEmpty(translateResult.getPlainText())
+                    CommonUtils.stringIsEmpty(text)
+                    ||  CommonUtils.stringIsEmpty(translateResult.getLang())
+                    ||  CommonUtils.stringIsEmpty(translateResult.getPlainText())
                 ){
                 result = false;
             }
             return result;
         }
 
-        private boolean isEmpty(String text){
-            boolean isEmpty = true;
-            if (text != null){
-               if (!StringUtils.isEmpty(text)) isEmpty = false;
-            }
-            return isEmpty;
-        }
         boolean resultIsUnique(String text, TranslateResult translateResult){
             boolean isUnique = true;
             Cursor c = null;

@@ -15,26 +15,17 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
  */
 
 public class TranslateWatcher implements TextWatcher{
-    private Timer mTimer = new Timer();
-    private final String TAG = "TranslateWatcher";
-    private String mTranslateDirection;
-    private TranslateResult mTranslateResult = null;
-    private String mTranslateText = null;
-    private List<TranslateResultHandler> mHandlerList;
 
-    private final long mDelay = 500;
-    private final String mDelimeter = "-";
-    private TranslateQueryInterface mTranslateQuery;
+    private final String TAG = "TranslateWatcher";
+    private TextChangedListener mTextChangedListener;
+
 
     /**
-     * @param langFrom - идентификатор языка, с которого переводим
-     * @param langTo - идентификатор языка, на который переводим
-     * @param translateQuery - интерфейс запроса перевода
+     * @param
      */
-    public TranslateWatcher(@NonNull String langFrom, @NonNull String langTo, TranslateQueryInterface translateQuery) {
+    public TranslateWatcher(TextChangedListener listener) {
         super();
-        mTranslateQuery = translateQuery;
-        mTranslateDirection = langFrom.concat(mDelimeter).concat(langTo);
+        mTextChangedListener = listener;
     }
 
     @Override
@@ -56,22 +47,6 @@ public class TranslateWatcher implements TextWatcher{
     @Override
     public void afterTextChanged(Editable s) {
         final String text = s.toString();
-        if (text.length() > 0) {
-            mTimer.cancel();
-            mTimer = new Timer();
-            mTimer.schedule(
-                    new TimerTask() {
-                        @Override
-                        public void run() {
-                            mTranslateQuery.runTranslate(text, mTranslateDirection);
-                        }
-                    },
-                    mDelay
-            );
-        } else {
-            //если поле ввода было очищено, передадим обработчикам в качестве результата перевода null
-            mTimer.cancel();
-            mTranslateQuery.cancel();
-        }
+        mTextChangedListener.onTextChanged(text);
     }
 }

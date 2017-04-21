@@ -2,8 +2,9 @@ package kazmina.testapp.translator.translate;
 
 import java.lang.annotation.Annotation;
 
+import kazmina.testapp.translator.TranslatorApplication;
 import kazmina.testapp.translator.YandexTranslateApi;
-import kazmina.testapp.translator.api.APIError;
+import kazmina.testapp.translator.retrofitModels.APIError;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -11,7 +12,6 @@ import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * отправляет запросы к апи переводчика
@@ -23,15 +23,13 @@ class TranslateQueryImplementation implements TranslateQueryInterface {
     TranslateQueryImplementation(TranslateResultHandler handler) {
         super();
        mTranslateResultHandler = handler;
+
     }
 
     @Override
     public void runTranslate(final String text, final String translateDirection) {
-        final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://translate.yandex.net") //Базовая часть адреса
-                .addConverterFactory(GsonConverterFactory.create()) //Конвертер, необходимый для преобразования JSON'а в объекты
-                .build();
-        final YandexTranslateApi api = retrofit.create(YandexTranslateApi.class);
+        YandexTranslateApi api = TranslatorApplication.getApi();
+        final Retrofit retrofit = TranslatorApplication.getRetrofit();
         mCall = api.getTranslate(text, translateDirection);
         mCall.enqueue(new Callback<TranslateResult>() {
             @Override
@@ -57,7 +55,9 @@ class TranslateQueryImplementation implements TranslateQueryInterface {
 
             @Override
             public void onFailure(Call<TranslateResult> call, Throwable t) {
-                mTranslateResultHandler.handleError(null,null);
+                if (!call.isCanceled()){
+                    mTranslateResultHandler.handleError(null,null);
+                }
             }
         });
     }
