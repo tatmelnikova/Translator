@@ -30,11 +30,7 @@ public class DBProvider {
     DBProvider(Context context) {
         mDBBackend = new DBBackend(context);
         mDBNotificationManager = DBContainer.getNotificationInstance(context);
-        int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
-        final int corePoolSize = NUMBER_OF_CORES * 2;
-        final int maxPoolSize = NUMBER_OF_CORES * 2;
-        final long keepAliveTime = 100;
-        mExecutor = new CustomExecutor(corePoolSize, maxPoolSize, keepAliveTime);
+        mExecutor = new CustomExecutor();
     }
 
     @VisibleForTesting
@@ -233,8 +229,8 @@ public class DBProvider {
     }
 
     class CustomExecutor extends ThreadPoolExecutor {
-        CustomExecutor(int corePoolSize, int maxPoolSize, long keepAliveTime ) {
-            super(corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+        CustomExecutor( ) {
+            super(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         }
         //нужен shutdown?
     }
