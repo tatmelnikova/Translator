@@ -43,7 +43,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener{
     public void deleteHistoryList(){
         Log.d(TAG, "currentItem=" +mViewPager.getCurrentItem());
         HistoryListFragment fragment = mViewPagerAdapter.getItem(mViewPager.getCurrentItem());
-        fragment.clearList();
+        fragment.onClearHistoryClicked();
     }
     @Nullable
     @Override

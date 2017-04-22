@@ -2,15 +2,19 @@ package kazmina.testapp.translator.history;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import kazmina.testapp.translator.R;
 import kazmina.testapp.translator.db.DBContainer;
@@ -22,11 +26,13 @@ import kazmina.testapp.translator.db.DBProvider;
  * фрагмент, содержащий список элементов истории
  */
 
-public class HistoryListFragment extends ListFragment {
+public class HistoryListFragment extends ListFragment implements ClearHistoryClickListener{
     private String TAG = "HISTORY";
+    protected final int DIALOG_TITLE = R.string.dialog_delete_history_title;
     DBProvider mDBProvider;
     private DBNotificationManager mDBNotificationManager;
     protected String mSearchText = null;
+    private TextView mFooterView;
     private DBNotificationManager.Listener mDbListener = new DBNotificationManager.Listener(){
         @Override
         public void onDataUpdated() {
@@ -59,6 +65,8 @@ public class HistoryListFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history_list, container, false);
         SearchView historySearchView = (SearchView) view.findViewById(R.id.historySearchView);
+        mFooterView = (TextView) view.findViewById(R.id.copyright);
+        mFooterView.setMovementMethod(LinkMovementMethod.getInstance());
         historySearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -72,6 +80,7 @@ public class HistoryListFragment extends ListFragment {
                 return true;
             }
         });
+
         return view;
     }
 
@@ -104,8 +113,39 @@ public class HistoryListFragment extends ListFragment {
                     historyCursorAdapter = new HistoryCursorAdapter(getContext(), result, 1);
                     setListAdapter(historyCursorAdapter);
                 }
-
+                toggleFooter(result.getCount() > 0);
             }
         });
+    }
+
+    protected void toggleFooter(boolean visible){
+        if (mFooterView != null) {
+            if (visible) {
+                mFooterView.setVisibility(View.VISIBLE);
+            } else {
+                mFooterView.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    protected int getTitle(){
+        return DIALOG_TITLE;
+    }
+    @Override
+    public void onClearHistoryClicked() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getTitle());
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                clearList();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

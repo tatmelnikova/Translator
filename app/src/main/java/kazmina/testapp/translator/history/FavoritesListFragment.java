@@ -3,6 +3,7 @@ package kazmina.testapp.translator.history;
 import android.database.Cursor;
 import android.util.Log;
 
+import kazmina.testapp.translator.R;
 import kazmina.testapp.translator.db.DBProvider;
 import kazmina.testapp.translator.history.HistoryCursorAdapter;
 import kazmina.testapp.translator.history.HistoryListFragment;
@@ -13,10 +14,11 @@ import kazmina.testapp.translator.history.HistoryListFragment;
 
 public class FavoritesListFragment extends HistoryListFragment {
     private String TAG = "FavoritesListFragment";
-
+    protected final int DIALOG_TITLE = R.string.dialog_delete_favorites_title;
     @Override
     public void clearList() {
        mDBProvider.clearFavorites();
+
     }
 
     public void refreshHistoryData(){
@@ -32,8 +34,12 @@ public class FavoritesListFragment extends HistoryListFragment {
                     historyCursorAdapter = new HistoryCursorAdapter(getContext(), result, 1);
                     setListAdapter(historyCursorAdapter);
                 }
-
+                toggleFooter(result.getCount() > 0);
             }
         });
+    }
+
+    protected int getTitle(){
+        return DIALOG_TITLE;
     }
 }
