@@ -17,8 +17,6 @@
     <string name="copyright">Переведено сервисом <a href="http://translate.yandex.ru/">«Яндекс.Переводчик»</a></string>
     <string name="used_langs">Недавно использованные</string>
     <string name="all_langs">Все языки</string>
-    <string name="settings_langs_title">Языки</string>
-    <string name="settings_langs_save">Сохранять список использованных языков</string>
     <string name="settings_about">О программе</string>
-    <string name="settings_autodetect">Определять язык</string>
+    <string name="about">Приложение разработано для проекта Яндекса "Мобилизация". Все переводы осуществлены с помощью сервиса <a href="http://translate.yandex.ru/">«Яндекс.Переводчик»</a></string>
 </resources>
