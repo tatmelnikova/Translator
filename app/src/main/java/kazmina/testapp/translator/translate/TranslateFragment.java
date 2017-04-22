@@ -77,6 +77,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         rotate.setOnClickListener(this);
         View swapLangs = view.findViewById(R.id.swapLang);
         swapLangs.setOnClickListener(this);
+
         Bundle args = getArguments();
         if (savedInstanceState == null && args != null) {
             saveArguments(args);
@@ -92,12 +93,12 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         Log.d(TAG, "onResume");
         mTranslateQuery = new TranslateQueryImplementation(this);
         showTranslateDirection();
+
+
         ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
         TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
         TextView copyrightTextView = (TextView) mView.findViewById(R.id.copyright);
         copyrightTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
-
         ShowResultAction showResultAction = new ShowResultAction(resultTextView, copyrightTextView);
         ListenFavoritesAction listenFavoritesAction = new ListenFavoritesAction(getContext(), imageButton);
         mSaveResultAction = new SaveResultAction(getContext());
@@ -162,6 +163,9 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         }
     }
 
+    /**
+     * отображает названия языков перевода
+     */
     private void showTranslateDirection(){
             Button langFromButton = (Button) mView.findViewById(R.id.langFrom);
             langFromButton.setText(mLangFromTitle);

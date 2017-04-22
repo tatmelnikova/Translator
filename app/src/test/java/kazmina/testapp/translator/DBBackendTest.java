@@ -18,7 +18,6 @@ import kazmina.testapp.translator.retrofitModels.TranslateResult;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 
 /**
  * тесты для базы данных
@@ -73,8 +72,17 @@ public class DBBackendTest implements DBContract {
 
     }
 
-    public void testTranslateResultIsValidForSave(){
+    public void resultShouldBeSavedOnlyOnce()  {
+        String text = "мама";
         TranslateResult result = new TranslateResult();
+        result.setLang("ru-en");
+        result.setCode(200);
+        result.setText(new String[]{"mom"});
+        boolean inserted = dbBackend.insertHistoryItem(text, result.getPlainText(), result.getLangFrom(), result.getLangTo());
+        Assert.assertTrue(inserted);
+        inserted = dbBackend.insertHistoryItem(text, result.getPlainText(), result.getLangFrom(), result.getLangTo());
+        Assert.assertFalse(inserted);
+
     }
     private int getCount(SQLiteDatabase db, String table) {
         return DBUtils.getResultLongAndClose(

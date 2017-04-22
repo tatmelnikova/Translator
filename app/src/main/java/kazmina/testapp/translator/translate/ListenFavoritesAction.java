@@ -10,6 +10,7 @@ import kazmina.testapp.translator.R;
 import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBProvider;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
+import kazmina.testapp.translator.utils.CommonUtils;
 
 /**
  * управляет поведением кнопки добавить в избранное для результата перевода
@@ -31,11 +32,11 @@ public class ListenFavoritesAction implements TranslateResultHandler, View.OnCli
 
     @Override
     public boolean processResult(String text, TranslateResult translateResult) {
-        mText = text;
+        mText = CommonUtils.trimString(text);
         mTranslateResult = translateResult;
         if (translateResult != null) {
             DBProvider provider = DBContainer.getProviderInstance(mContext);
-            provider.getFavoritesId(text, translateResult.getLangFrom(), translateResult.getLangTo(), new DBProvider.ResultCallback<Integer>() {
+            provider.getFavoritesId(mText, translateResult.getLangFrom(), translateResult.getLangTo(), new DBProvider.ResultCallback<Integer>() {
                 @Override
                 public void onFinished(Integer result) {
                     mFavId = result;

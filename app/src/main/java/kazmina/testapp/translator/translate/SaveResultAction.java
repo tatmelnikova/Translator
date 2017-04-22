@@ -5,6 +5,7 @@ import android.content.Context;
 import kazmina.testapp.translator.db.DBContainer;
 import kazmina.testapp.translator.db.DBProvider;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
+import kazmina.testapp.translator.utils.CommonUtils;
 
 /**
  * обработчик для сохранения результата перевода в истории
@@ -25,7 +26,7 @@ public class SaveResultAction implements TranslateResultHandler {
 
     @Override
     public boolean processResult(String text, TranslateResult translateResult) {
-        mText = text;
+        mText = CommonUtils.trimString(text);
         mTranslateResult = translateResult;
         mSaved = false;
         if (mSaveImmediate) saveHistoryItem();

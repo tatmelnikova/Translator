@@ -6,6 +6,7 @@ import kazmina.testapp.translator.TranslatorApplication;
 import kazmina.testapp.translator.YandexTranslateApi;
 import kazmina.testapp.translator.retrofitModels.APIError;
 import kazmina.testapp.translator.retrofitModels.TranslateResult;
+import kazmina.testapp.translator.utils.CommonUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,7 +31,8 @@ class TranslateQueryImplementation implements TranslateQueryInterface {
     public void runTranslate(final String text, final String translateDirection) {
         YandexTranslateApi api = TranslatorApplication.getApi();
         final Retrofit retrofit = TranslatorApplication.getRetrofit();
-        mCall = api.getTranslate(text, translateDirection);
+        final String trimmedText = CommonUtils.trimString(text);
+        mCall = api.getTranslate(trimmedText, translateDirection);
         mCall.enqueue(new Callback<TranslateResult>() {
             @Override
             public void onResponse(Call<TranslateResult> call, Response<TranslateResult> response) {
