@@ -78,6 +78,9 @@
     <style name="historyListItem">
         <item name="android:padding">@dimen/activity_horizontal_margin</item>
     </style>
+    <style name="historyListFooter" parent="historyListItem">
+        <item name="android:background">@drawable/list_footer_bg</item>
+    </style>
     <style name="historyTextFrom">
         <item name="android:padding">0dp</item>
         <item name="android:layout_marginRight">@dimen/inner_block_padding</item>

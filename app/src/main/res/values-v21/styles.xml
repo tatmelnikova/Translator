@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="historySearchView" parent="Base.Widget.AppCompat.SearchView">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="queryBackground">@null</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:background">@color/colorWhite</item>
+
+    </style>
+
+    <style name="historyListFooter" parent="historyListItem">
+        <item name="android:background">@color/colorWhite</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:translationZ">4dp</item>
+    </style>
+</resources>
