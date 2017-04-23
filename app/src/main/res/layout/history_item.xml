@@ -41,9 +41,9 @@
 
     <ImageView
         android:id="@+id/imageViewFav"
-        android:layout_width="@dimen/fav_icon_width"
-        android:layout_height="@dimen/fav_icon_height"
-        android:padding="@dimen/fav_icon_padding"
+        android:layout_width="@dimen/fav_icon_list_size"
+        android:layout_height="@dimen/fav_icon_list_size"
+        android:padding="@dimen/icon_padding"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"

@@ -73,8 +73,6 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         from.setOnClickListener(this);
         View to = view.findViewById(R.id.langTo);
         to.setOnClickListener(this);
-        View rotate = view.findViewById(R.id.rotate);
-        rotate.setOnClickListener(this);
         View swapLangs = view.findViewById(R.id.swapLang);
         swapLangs.setOnClickListener(this);
 
@@ -94,7 +92,8 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         mTranslateQuery = new TranslateQueryImplementation(this);
         showTranslateDirection();
 
-
+        ImageView copyButton = (ImageView) mView.findViewById(R.id.copy);
+        CopyTextAction copyTextAction = new CopyTextAction(copyButton, getContext());
         ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
         TextView resultTextView = (TextView) mView.findViewById(R.id.textViewResult);
         TextView copyrightTextView = (TextView) mView.findViewById(R.id.copyright);
@@ -105,7 +104,9 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         mResultHandlers = new ArrayList<>();
         mResultHandlers.add(showResultAction);
         mResultHandlers.add(mSaveResultAction);
+        mResultHandlers.add(copyTextAction);
         mResultHandlers.add(listenFavoritesAction);
+
         setWatcher();
         //при потере фокуса полем ввода текста установить флаг немедленного сохранения результата перевода в истории
         mEditTextTranslate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -247,8 +248,13 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         }
     }
 
+    /**
+     * обновляет языки направления перевода
+     */
     public void refreshLangs(){
         showTranslateDirection();
+        //сначала сбросить результат перевода
+        processResult(mTranslateText, null);
         if (mTranslateText != null) runTranslate(mTranslateText);
     }
 
@@ -281,15 +287,6 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
                 break;
             case R.id.swapLang:
                 swapTranslateDirection();
-                break;
-            case R.id.rotate:
-                if (!"1".equals(v.getTag())) {
-                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    v.setTag("1");
-                }else{
-                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    v.setTag("0");
-                }
                 break;
             default:
                 break;
@@ -341,6 +338,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
             mTimer.cancel();
             processResult(null, null);
         }else{
+            //перевод запускается с задержкой, чтобы не дергать его на каждую введенную букву
             mTimer.cancel();
             mTimer = new Timer();
             mTimer.schedule(

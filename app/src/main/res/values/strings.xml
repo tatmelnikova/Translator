@@ -4,10 +4,12 @@
     <string name="title_favorites">Избранное</string>
     <string name="title_translate">Перевод</string>
     <string name="title_swap_languages">Поменять языки местами</string>
+    <string name="text_copied">Результат перевода скопирован в буфер обмена</string>
     <string name="translate_hint">Введите текст</string>
     <string name="tab_history">История</string>
     <string name="tab_favorites">Избранное</string>
     <string name="fav_icon_title">В избранное</string>
+    <string name="copy_icon_title">Копировать результат перевода</string>
     <string name="title_delete_history">Удалить историю</string>
     <string name="dialog_delete_history_title">Удалить историю?</string>
     <string name="dialog_delete_favorites_title">Удалить избранное?</string>

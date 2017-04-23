@@ -34,7 +34,7 @@ public class FavoritesListFragment extends HistoryListFragment {
                     historyCursorAdapter = new HistoryCursorAdapter(getContext(), result, 1);
                     setListAdapter(historyCursorAdapter);
                 }
-                toggleFooter(result.getCount() > 0);
+                if (result != null)toggleFooter(result.getCount() > 0);
             }
         });
     }

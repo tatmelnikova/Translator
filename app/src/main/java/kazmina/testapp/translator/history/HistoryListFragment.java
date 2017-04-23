@@ -113,7 +113,7 @@ public class HistoryListFragment extends ListFragment implements ClearHistoryCli
                     historyCursorAdapter = new HistoryCursorAdapter(getContext(), result, 1);
                     setListAdapter(historyCursorAdapter);
                 }
-                toggleFooter(result.getCount() > 0);
+                if (result != null)toggleFooter(result.getCount() > 0);
             }
         });
     }

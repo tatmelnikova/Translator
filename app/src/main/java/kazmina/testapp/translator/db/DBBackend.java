@@ -45,9 +45,11 @@ public class DBBackend implements DBContract {
             String[] columns = new String[]{History.ID, History.TEXT, History.RESULT, History.DIRECTION_FROM, History.DIRECTION_TO, History.FAV_ID};
             String orderBy = History.ID + " DESC";
             String where = null; String[] args = null;
+
             if (searchText != null) {
+                searchText = "%".concat(searchText).concat("%");
                 where = History.TEXT + " like ? OR " + History.RESULT + "  like ? ";
-                args = new String[]{"%".concat(searchText).concat("%")};
+                args = new String[]{searchText,searchText};
             }
             c = db.query(HISTORY_WITH_FAV, columns, where, args, null, null, orderBy);
             if (c != null) {
@@ -75,12 +77,14 @@ public class DBBackend implements DBContract {
             String where = null;
             String[] args = null;
             if (searchText != null) {
-                where = "(" + History.TEXT + " like ? OR " + History.RESULT + "  like ? ) AND " + History.FAV_ID + " IS NOT NULL";
-                args = new String[]{"%".concat(searchText).concat("%")};
+                where = "(" + History.TEXT + " like ? OR " + History.RESULT + "  like ? ) AND " + History.FAV_ID + " IS NOT NULL ";
+                searchText = "%".concat(searchText).concat("%");
+                args = new String[]{searchText, searchText};
+                c = db.query(HISTORY_WITH_FAV, columns, where, args, null, null, orderBy);
             } else {
-                where = History.FAV_ID + " IS NOT NULL";
+                where = History.FAV_ID + " IS NOT NULL ";
+                c = db.query(HISTORY_WITH_FAV, columns, where, null, null, null, orderBy);
             }
-            c = db.query(HISTORY_WITH_FAV, columns, where, args, null, null, orderBy);
             if (c != null) {
                 c.moveToFirst();
             }
