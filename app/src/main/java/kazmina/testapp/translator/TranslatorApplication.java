@@ -13,7 +13,6 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/* основной класс приложения */
 
 public class TranslatorApplication extends Application {
     private static Retrofit sRetrofit;

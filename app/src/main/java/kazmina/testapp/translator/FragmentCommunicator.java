@@ -1,7 +1,7 @@
 package kazmina.testapp.translator;
 
 /**
- * @todo: header
+ * интерфейс для взаимодействия фрагментов с активити
  */
 
 public interface FragmentCommunicator {

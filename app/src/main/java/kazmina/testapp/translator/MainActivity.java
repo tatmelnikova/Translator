@@ -52,14 +52,19 @@ public class MainActivity extends AppCompatActivity implements LanguagesHolder,F
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //@todo доделать тесты, привести в порядок стили. и по хорошему переписать все с rxJava
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mBottomNavigationListener);
+        //запуск проверки необходимости обновления списка языков
         mLanguagesUpdater.checkNeedUpdate(this);
-
         if (savedInstanceState == null) showFragment(TRANSLATE_FRAGMENT_TAG);
     }
 
+    /**
+     * отображает фрагмент activeFragmentTag и скрывает остальные фрагменты
+     * @param activeFragmentTag - тег фрагмента, который будем отображать
+     */
     private void showFragment(String activeFragmentTag){
         View langsView = findViewById(R.id.changeLangsContainer);
         langsView.setVisibility(View.GONE);
@@ -74,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements LanguagesHolder,F
             }
         }
         Fragment active = fm.findFragmentByTag(activeFragmentTag);
+        //если в менеджере фрагментов не найден фрагмент с заданным тегом, создать новый
         if (active == null){
             switch (activeFragmentTag){
                 case SHOW_HISTORY_FRAGMENT_TAG:
@@ -91,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements LanguagesHolder,F
                     break;
             }
         }
+
         if (active != null && active.isAdded()){
             ft.show(active);
         }else if (active != null ){
@@ -107,18 +114,11 @@ public class MainActivity extends AppCompatActivity implements LanguagesHolder,F
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-    }
-
+    /**
+     * обработчик нажатия кнопки выбора языка. открывает фрагмент со списком языков и передает в него текущий выбранный язык
+     * @param viewId - кнопка, для которой будем менять язык
+     * @param langValue - текущий выбранный язык
+     */
     @Override
     public void onSelectLangButtonClicked(int viewId, String langValue) {
         hideKeyboard();
@@ -132,6 +132,12 @@ public class MainActivity extends AppCompatActivity implements LanguagesHolder,F
         langsView.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * обработчик выбора языка, выбранный язык передается во фрагмент перевода
+     * @param viewId - кнопка, для которой меняем язык
+     * @param langValue - код языка
+     * @param langTitle - локализованное название языка
+     */
     @Override
     public void onLangSelected(int viewId, String langValue, String langTitle) {
         View langsView = findViewById(R.id.changeLangsContainer);

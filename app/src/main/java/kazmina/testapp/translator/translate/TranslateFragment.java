@@ -46,7 +46,6 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     private String mLangFromTitle;
     private String mLangToTitle;
     private SaveResultAction mSaveResultAction;
-
     private EditText mEditTextTranslate;
     private FragmentCommunicator mListener;
     TranslateQueryInterface mTranslateQuery;
@@ -91,7 +90,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         Log.d(TAG, "onResume");
         mTranslateQuery = new TranslateQueryImplementation(this);
         showTranslateDirection();
-
+        //привязать обработчики для результатов перевода
         ImageView copyButton = (ImageView) mView.findViewById(R.id.copy);
         CopyTextAction copyTextAction = new CopyTextAction(copyButton, getContext());
         ImageView imageButton = (ImageView) mView.findViewById(R.id.imageViewFav);
@@ -106,7 +105,7 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         mResultHandlers.add(mSaveResultAction);
         mResultHandlers.add(copyTextAction);
         mResultHandlers.add(listenFavoritesAction);
-
+        //обработчик onTextChanged
         setWatcher();
         //при потере фокуса полем ввода текста установить флаг немедленного сохранения результата перевода в истории
         mEditTextTranslate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -126,7 +125,6 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden){
-            //mTranslateQuery = new TranslateQueryImplementation(this);
             refreshLangs();
         }
     }
@@ -221,6 +219,12 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         return true;
     }
 
+    /**
+     * отображает сообщение об ошибке. если в коде ошибки пришел null - ответ от сервера не получен
+     * или не удалось распарсить ответ, т.е. скорее всего нет сети
+     * @param code - код сообщения об ошибке
+     * @param message - текст сообщения
+     */
     @Override
     public void handleError(Integer code, String message) {
         String localisedMessage;
