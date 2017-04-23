@@ -84,6 +84,7 @@
                 android:id="@+id/imageViewFav"
                 android:layout_width="@dimen/fav_icon_width"
                 android:layout_height="@dimen/fav_icon_height"
+                android:visibility="gone"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:background="@android:color/transparent"
@@ -93,19 +94,13 @@
                 />
             <ImageView
                 android:id="@+id/copy"
+                android:visibility="gone"
                 android:layout_width="@dimen/fav_icon_width"
                 android:layout_height="@dimen/fav_icon_height"
                 android:layout_below="@+id/imageViewFav"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_content_copy_white_24dp"
                 android:contentDescription="@string/copy_icon_title"
-                android:layout_toEndOf="@+id/resultScrollWrapper"
-                android:layout_toRightOf="@+id/resultScrollWrapper"/>
-            <Button
-                android:id="@+id/rotate"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_below="@+id/imageViewFav"
                 android:layout_toEndOf="@+id/resultScrollWrapper"
                 android:layout_toRightOf="@+id/resultScrollWrapper"/>
             <TextView

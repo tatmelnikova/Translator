@@ -13,6 +13,7 @@
     <string name="title_delete_history">Удалить историю</string>
     <string name="dialog_delete_history_title">Удалить историю?</string>
     <string name="dialog_delete_favorites_title">Удалить избранное?</string>
+    <string name="empty_list">В списке пока ничего нет</string>
     <string name="message_limit">Невозможно получить перевод. Превышено суточное ограничение на объем переведенного текста</string>
     <string name="message_blocked">Невозможно получить перевод. API-ключ заблокирован</string>
     <string name="message_invalid">Невозможно получить перевод. Приложением передан неправильный API-ключ</string>

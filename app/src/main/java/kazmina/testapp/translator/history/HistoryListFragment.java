@@ -56,7 +56,13 @@ public class HistoryListFragment extends ListFragment implements ClearHistoryCli
     public HistoryListFragment() {
         super();
     }
-    
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        View emptyView = view.findViewById(R.id.empty);
+        getListView().setEmptyView(emptyView);
+    }
 
     public void clearList(){
         mDBProvider.clearHistory();
