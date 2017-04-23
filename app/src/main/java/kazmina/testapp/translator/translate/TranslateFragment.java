@@ -255,6 +255,8 @@ public class TranslateFragment extends Fragment implements LanguagesHolder, Tran
         showTranslateDirection();
         //сначала сбросить результат перевода
         processResult(mTranslateText, null);
+        //отменить текущие запросы
+        mTranslateQuery.cancel();
         if (mTranslateText != null) runTranslate(mTranslateText);
     }
 
